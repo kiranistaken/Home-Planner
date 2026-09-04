@@ -2,565 +2,680 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gruha | House Chores & Kitchen Planner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gruha Workspace | Chores & Weekly Kitchen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #eef2ff;
-            --success: #10b981;
-            --success-light: #ecfdf5;
-            --danger: #ef4444;
-            --danger-light: #fef2f2;
-            --warning: #f59e0b;
-            --warning-light: #fffbeb;
-            --slate-900: #0f172a;
-            --slate-700: #334155;
-            --slate-500: #64748b;
-            --slate-200: #e2e8f0;
-            --slate-100: #f8fafc;
-            --card: #ffffff;
-            --radius: 16px;
-            --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+            --bg: #fbfbfa;
+            --sidebar-bg: #f7f6f3;
+            --surface: #ffffff;
+            --text-main: #37352f;
+            --text-muted: #787774;
+            --border: rgba(55, 53, 47, 0.09);
+            --border-strong: rgba(55, 53, 47, 0.16);
+            --primary: #2383e2;
+            --primary-light: #eef6fc;
+            --tag-green: #e6f6ee;
+            --text-green: #0f7b47;
+            --tag-yellow: #fbf3db;
+            --text-yellow: #8f6416;
+            --tag-red: #fdebec;
+            --text-red: #c0392b;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-subtle: 0 1px 3px rgba(15, 15, 15, 0.05), 0 0 0 1px rgba(15, 15, 15, 0.07);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f1f5f9; color: var(--slate-900); padding-bottom: 90px; }
-        .app-container { max-width: 580px; margin: 0 auto; min-height: 100vh; background: #fff; box-shadow: 0 0 40px rgba(0,0,0,0.05); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text-main); font-size: 14px; display: flex; justify-content: center; min-height: 100vh; }
 
-        /* Top Bar */
-        .top-bar {
-            padding: 20px 20px 14px 20px;
-            background: #fff;
+        .app-layout {
+            width: 100%;
+            max-width: 980px;
+            background: var(--surface);
+            min-height: 100vh;
+            border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Notion / Slack Header */
+        .workspace-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
             position: sticky;
             top: 0;
             z-index: 40;
-            border-bottom: 1px solid var(--slate-100);
         }
-        .header-row { display: flex; justify-content: space-between; align-items: center; }
-        .app-title { font-size: 20px; font-weight: 700; color: var(--slate-900); }
-        .ist-time { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 20px; }
-        
-        /* Attendance Widget */
-        .att-banner {
-            margin: 12px 0 4px 0;
-            background: var(--slate-100);
-            border-radius: 12px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .att-status-text { font-size: 13px; font-weight: 600; }
-        .btn-group { display: flex; gap: 6px; }
+        .header-breadcrumbs { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; }
+        .workspace-badge { background: var(--sidebar-bg); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 12px; color: var(--text-muted); }
+        .ist-time-pill { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 20px; }
 
-        /* Buttons */
-        button {
+        /* Top Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 8px 24px;
+            background: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: none;
             border: none;
             outline: none;
             cursor: pointer;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
             padding: 8px 14px;
-            transition: all 0.2s ease;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { background: rgba(55, 53, 47, 0.06); color: var(--text-main); }
+        .tab-btn.active { background: var(--surface); color: var(--text-main); font-weight: 600; box-shadow: var(--shadow-subtle); }
+
+        /* Main Body Content */
+        .main-content { padding: 24px; flex: 1; }
+
+        /* Notion Callout Box */
+        .notion-callout {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .notion-callout-icon { font-size: 20px; line-height: 1.2; }
+        .notion-callout-body { flex: 1; }
+
+        /* Buttons & Actions */
+        button {
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text-main);
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
+            transition: all 0.15s;
         }
-        button:active { transform: scale(0.97); }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-secondary { background: var(--slate-100); color: var(--slate-700); }
-        .btn-success { background: var(--success); color: #fff; }
-        .btn-danger { background: var(--danger-light); color: var(--danger); }
-        .btn-warning { background: var(--warning-light); color: var(--warning); }
-        .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 8px; }
+        button:hover { background: var(--sidebar-bg); }
+        button:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: #1b74c9; }
+        .btn-green { background: var(--tag-green); color: var(--text-green); border-color: transparent; }
+        .btn-red { background: var(--tag-red); color: var(--text-red); border-color: transparent; }
+        .btn-yellow { background: var(--tag-yellow); color: var(--text-yellow); border-color: transparent; }
+        .btn-sm { padding: 4px 8px; font-size: 12px; }
 
-        /* Calendar Strip */
-        .calendar-strip {
+        /* Google Tasks Checklist View */
+        .tasks-group-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin: 18px 0 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        .task-row:hover { background: var(--sidebar-bg); }
+        .task-row.completed .task-text { text-decoration: line-through; color: var(--text-muted); }
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-strong);
+            border-radius: 50%;
+            margin-right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .task-row.completed .task-checkbox { background: var(--primary); border-color: var(--primary); }
+        .task-row.completed .task-checkbox::after { content: '✓'; color: white; font-size: 11px; font-weight: bold; }
+        .task-content { flex: 1; }
+        .task-text { font-size: 14px; font-weight: 500; color: var(--text-main); }
+        .task-subtext { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .task-actions { display: flex; gap: 4px; align-items: center; }
+
+        /* Inline Add Task Input */
+        .add-task-inline {
             display: flex;
             gap: 8px;
-            overflow-x: auto;
-            padding: 14px 20px;
-            background: #fff;
-            scrollbar-width: none;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--sidebar-bg);
+            margin-top: 10px;
         }
-        .calendar-strip::-webkit-scrollbar { display: none; }
-        .cal-day-card {
-            flex: 0 0 65px;
-            padding: 10px 0;
-            text-align: center;
-            border-radius: 14px;
-            background: var(--slate-100);
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-        .cal-day-card.active {
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
-        }
-        .cal-day-name { font-size: 11px; font-weight: 600; text-transform: uppercase; opacity: 0.8; }
-        .cal-day-num { font-size: 17px; font-weight: 700; margin-top: 2px; }
-        .cal-dot { width: 5px; height: 5px; background: currentColor; border-radius: 50%; margin: 4px auto 0 auto; opacity: 0.6; }
-
-        /* Content Area */
-        .view-content { padding: 16px 20px; }
-
-        /* Section Headings */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 18px 0 10px 0;
-        }
-        .section-title { font-size: 15px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Cards */
-        .card {
-            background: #fff;
-            border: 1px solid var(--slate-200);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow);
-        }
-
-        /* Laundry Smart Tracker */
-        .laundry-card {
-            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
-            color: #fff;
+        .add-task-inline input {
+            flex: 1;
             border: none;
+            background: transparent;
+            font-size: 13px;
+            outline: none;
+            color: var(--text-main);
         }
-        .laundry-stepper { display: flex; justify-content: space-between; margin: 12px 0; position: relative; }
-        .laundry-step { text-align: center; font-size: 11px; opacity: 0.7; z-index: 2; }
-        .laundry-step.active { opacity: 1; font-weight: 700; }
-        .laundry-step-circle {
-            width: 26px; height: 26px; border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            margin: 0 auto 4px auto;
-            display: flex; align-items: center; justify-content: center; font-size: 11px;
-        }
-        .laundry-step.active .laundry-step-circle { background: #fff; color: var(--primary); font-weight: bold; }
 
-        /* Chore Item */
-        .task-item {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            padding: 12px;
-            border-radius: 12px;
-            background: #fff;
-            border: 1px solid var(--slate-200);
-            margin-bottom: 8px;
+        /* Notion Database Table for Whole Week Meals */
+        .notion-table-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            background: var(--surface);
+            box-shadow: var(--shadow-subtle);
         }
-        .task-item.completed { background: var(--slate-100); opacity: 0.7; }
-        .task-item.completed .task-title { text-decoration: line-through; }
-        .task-details { flex: 1; padding-right: 10px; }
-        .task-title { font-size: 14px; font-weight: 600; color: var(--slate-900); }
-        .task-subtitle { font-size: 13px; color: var(--slate-500); margin-top: 2px; }
-        .task-meta { font-size: 11px; color: var(--primary); font-weight: 600; margin-top: 4px; }
-        .task-actions { display: flex; align-items: center; gap: 4px; }
-        .icon-btn {
-            background: none;
-            padding: 6px;
-            border-radius: 8px;
-            font-size: 16px;
-            color: var(--slate-500);
-        }
-        .icon-btn:hover { background: var(--slate-100); }
-        .icon-btn.speaking { color: var(--primary); animation: pulse 1s infinite; }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-        /* Meal Item */
-        .meal-card {
-            background: #fff;
-            border-radius: var(--radius);
-            border: 1px solid var(--slate-200);
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        .meal-header {
-            padding: 12px 14px;
-            background: var(--slate-100);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .meal-type { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate-500); }
-        .meal-body { padding: 14px; }
-        .dish-name { font-size: 16px; font-weight: 700; color: var(--slate-900); }
-        .servings-tag {
-            font-size: 12px;
-            font-weight: 600;
-            background: #fef3c7;
-            color: #92400e;
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-        .video-box { margin-top: 10px; border-radius: 10px; overflow: hidden; height: 180px; }
-        .video-box iframe { width: 100%; height: 100%; border: none; }
-
-        /* Bottom Tab Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+        .notion-table {
             width: 100%;
-            max-width: 580px;
-            background: #fff;
-            border-top: 1px solid var(--slate-200);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 16px 0;
-            z-index: 50;
+            border-collapse: collapse;
+            font-size: 13px;
         }
-        .nav-item {
-            background: none;
-            flex-direction: column;
-            gap: 2px;
-            color: var(--slate-500);
+        .notion-table th {
+            background: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .notion-table td {
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            padding: 12px 14px;
+            vertical-align: top;
+        }
+        .meal-cell { display: flex; flex-direction: column; gap: 4px; min-width: 170px; }
+        .meal-dish-name { font-weight: 600; color: var(--text-main); }
+        .servings-pill {
             font-size: 11px;
             font-weight: 600;
-            padding: 4px 12px;
+            background: var(--tag-yellow);
+            color: var(--text-yellow);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
         }
-        .nav-item.active { color: var(--primary); }
-        .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
+        .yt-link-btn {
+            font-size: 11px;
+            color: #ef4444;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+        .yt-link-btn:hover { text-decoration: underline; }
+
+        /* Weekly Cards Grid */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+        .week-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            background: var(--surface);
+            box-shadow: var(--shadow-subtle);
+        }
+        .week-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .week-day-title { font-weight: 700; font-size: 14px; }
 
         /* Modal Sheet */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 15, 15, 0.4);
+            backdrop-filter: blur(3px);
             z-index: 100;
             display: none;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
+            padding: 16px;
         }
-        .modal-sheet {
-            background: #fff;
+        .modal-card {
+            background: var(--surface);
             width: 100%;
-            max-width: 580px;
-            border-radius: 24px 24px 0 0;
-            padding: 24px 20px 34px 20px;
-            animation: slideUp 0.25s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 520px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 16px 36px rgba(0,0,0,0.15);
+            padding: 22px;
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-title { font-size: 17px; font-weight: 700; }
+        .modal-title { font-size: 16px; font-weight: 700; }
         .form-group { margin-bottom: 14px; }
-        .form-label { font-size: 13px; font-weight: 600; color: var(--slate-700); margin-bottom: 6px; display: block; }
+        .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; }
         input, select, textarea {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--slate-200);
-            border-radius: 10px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
             font-size: 14px;
+            background: var(--surface);
+            color: var(--text-main);
             outline: none;
         }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        .video-box { margin-top: 10px; border-radius: 8px; overflow: hidden; height: 240px; }
+        .video-box iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <!-- Top Header -->
-    <div class="top-bar">
-        <div class="header-row">
-            <div>
-                <h1 class="app-title">Gruha Planner</h1>
-                <small style="color:var(--slate-500); font-size:12px;">Hyderabad, India</small>
+<div class="app-layout">
+    <!-- Top Workspace Header -->
+    <header class="workspace-header">
+        <div class="header-breadcrumbs">
+            <span>🏠 Gruha Workspace</span>
+            <span class="workspace-badge">Admin & Helper Suite</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="ist-time-pill" id="ist-clock">IST 00:00:00</div>
+            <select id="user-role-select" style="width:auto; padding:4px 8px; font-size:12px;" onchange="switchRole()">
+                <option value="Admin">Admin (నిర్వాహకుడు)</option>
+                <option value="Helper">Helper (పనిమనిషి)</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="setTab('daily')" id="tab-daily">
+            <span>✓</span> Daily Tasks
+        </button>
+        <button class="tab-btn" onclick="setTab('meals')" id="tab-meals">
+            <span>🍲</span> Whole Week Meals (Admin)
+        </button>
+        <button class="tab-btn" onclick="setTab('week')" id="tab-week">
+            <span>🗓️</span> Weekly Schedule Board
+        </button>
+        <button class="tab-btn" onclick="setTab('audit')" id="tab-audit">
+            <span>📊</span> Attendance & Missed Report
+        </button>
+    </nav>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="main-content">
+        
+        <!-- Attendance Quick Action Callout -->
+        <div class="notion-callout">
+            <div class="notion-callout-icon">⏱️</div>
+            <div class="notion-callout-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <strong>Today's Attendance (IST)</strong>
+                        <div style="font-size:12px; color:var(--text-muted);" id="att-summary-text">Status: Checking...</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-green btn-sm" onclick="punchAttendance('in')">Punch In (రాక)</button>
+                        <button class="btn-sm" onclick="punchAttendance('out')">Punch Out (వెళ్ళుట)</button>
+                        <button class="btn-yellow btn-sm" onclick="openModal('modal-leave')">Mark Leave (సెలవు)</button>
+                    </div>
+                </div>
             </div>
-            <div class="ist-time" id="ist-time-pill">IST 00:00:00</div>
         </div>
 
-        <!-- Attendance & Role Bar -->
-        <div class="att-banner">
-            <div>
-                <span style="font-size:11px; color:var(--slate-500); font-weight:600; text-transform:uppercase;">Attendance</span>
-                <div class="att-status-text" id="att-badge">Checking...</div>
+        <!-- TAB 1: DAILY TASKS (Google Tasks Style) -->
+        <section id="view-daily">
+            <!-- Smart Laundry Pipeline Callout -->
+            <div class="notion-callout" style="background:#f4f9fd; border-color:#d0e6f9;">
+                <div class="notion-callout-icon">🧺</div>
+                <div class="notion-callout-body">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <strong>Laundry Automation Pipeline</strong>
+                        <button class="btn-primary btn-sm" onclick="loadWasherTonight()">+ Night Wash Loaded</button>
+                    </div>
+                    <p style="font-size:12px; color:var(--text-muted);" id="laundry-stage-desc">
+                        Cycle: Ready for tonight's load.
+                    </p>
+                </div>
             </div>
-            <div class="btn-group">
-                <button class="btn-primary btn-sm" onclick="quickPunch('in')">Punch In</button>
-                <button class="btn-secondary btn-sm" onclick="quickPunch('out')">Out</button>
-                <button class="btn-warning btn-sm" onclick="openModal('modal-leave')">Leave</button>
+
+            <!-- Date Selector for Daily View -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:16px 0 10px 0;">
+                <h2 style="font-size:16px; font-weight:700;">Chores for <span id="current-day-label" style="color:var(--primary);">Today</span></h2>
+                <input type="date" id="selected-date-picker" style="width:auto; padding:4px 8px; font-size:13px;" onchange="onDateChange()">
             </div>
-        </div>
-    </div>
 
-    <!-- Calendar 7-Day Strip -->
-    <div class="calendar-strip" id="calendar-strip"></div>
+            <!-- Tasks Container -->
+            <div id="tasks-list"></div>
 
-    <!-- Tab 1: Daily Tasks & Chores View -->
-    <div id="tab-view-today" class="view-content">
-        <!-- Laundry Automation Card -->
-        <div class="card laundry-card">
-            <div class="flex">
+            <!-- Inline Add Task Input -->
+            <div class="add-task-inline">
+                <span style="color:var(--text-muted); font-size:16px;">＋</span>
+                <input type="text" id="inline-task-en" placeholder="Add a task in English... (Press Enter or Tab)">
+                <input type="text" id="inline-task-te" placeholder="Telugu translation (తెలుగు వివరణ)..." onkeydown="if(event.key==='Enter') quickAddTask()">
+                <button class="btn-primary btn-sm" onclick="quickAddTask()">Add</button>
+            </div>
+
+            <!-- Today's Kitchen Menu Box -->
+            <div style="margin-top:28px;">
+                <div class="tasks-group-title">
+                    <span>Today's Meal Plan</span>
+                    <button class="btn-sm" onclick="setTab('meals')">Open Week Planner →</button>
+                </div>
+                <div id="today-meals-summary" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:8px;"></div>
+            </div>
+        </section>
+
+        <!-- TAB 2: WHOLE WEEK MEAL PLANNER (Admin Notion Table) -->
+        <section id="view-meals" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                 <div>
-                    <h3 style="font-size:15px; font-weight:700;">Laundry Cycle (బట్టల రొటీన్)</h3>
-                    <small style="opacity:0.8; font-size:12px;" id="laundry-current-desc">Ready for tonight's wash</small>
+                    <h2 style="font-size:18px; font-weight:700;">Weekly Meal & Recipe Engine</h2>
+                    <p style="font-size:13px; color:var(--text-muted);">Configure Breakfast, Lunch, Dinner, Guest Count & YouTube Recipes for the whole week.</p>
                 </div>
-                <button class="btn-secondary btn-sm" onclick="triggerNightWash()">+ Loaded Washer</button>
+                <button class="btn-primary" onclick="openEditMealModal('all')">+ Quick Edit Meal</button>
             </div>
-            <div class="laundry-stepper">
-                <div class="laundry-step" id="step-wash">
-                    <div class="laundry-step-circle">1</div>
-                    <span>Night Wash</span>
+
+            <div class="notion-table-container">
+                <table class="notion-table">
+                    <thead>
+                        <tr>
+                            <th style="width:130px;">Day (వారం)</th>
+                            <th>Breakfast (ఉపాహారం)</th>
+                            <th>Lunch (మధ్యాహ్న భోజనం)</th>
+                            <th>Dinner (రాత్రి భోజనం)</th>
+                            <th style="width:80px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weekly-meals-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: WEEKLY SCHEDULE BOARD (Monday - Sunday) -->
+        <section id="view-week" style="display:none;">
+            <div style="margin-bottom:14px;">
+                <h2 style="font-size:18px; font-weight:700;">Weekly Schedule & Chores Board</h2>
+                <p style="font-size:13px; color:var(--text-muted);">Full week roadmap showing recurring maintenance, sweeping, dusting, and meals.</p>
+            </div>
+            <div class="week-grid" id="week-grid-container"></div>
+        </section>
+
+        <!-- TAB 4: ATTENDANCE & MISSED TASKS AUDIT -->
+        <section id="view-audit" style="display:none;">
+            <h2 style="font-size:18px; font-weight:700; margin-bottom:14px;">Audit & Compliance Reports</h2>
+            
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+                <!-- Attendance History -->
+                <div class="week-card">
+                    <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Attendance History (IST)</h3>
+                    <div id="attendance-log-list" style="display:flex; flex-direction:column; gap:8px;"></div>
                 </div>
-                <div class="laundry-step" id="step-dry">
-                    <div class="laundry-step-circle">2</div>
-                    <span>Drying</span>
-                </div>
-                <div class="laundry-step" id="step-fold">
-                    <div class="laundry-step-circle">3</div>
-                    <span>Folding</span>
-                </div>
-                <div class="laundry-step" id="step-reload">
-                    <div class="laundry-step-circle">4</div>
-                    <span>Reload Night</span>
+
+                <!-- Missed Tasks Log -->
+                <div class="week-card">
+                    <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; color:var(--text-red);">Missed Chores Log</h3>
+                    <div id="missed-task-log-list" style="display:flex; flex-direction:column; gap:8px;"></div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Chores Section -->
-        <div class="section-header">
-            <span class="section-title">Chores for Selected Day</span>
-            <button class="btn-secondary btn-sm" onclick="openAddChoreModal()">+ Add Chore</button>
-        </div>
-        <div id="tasks-list"></div>
-
-        <!-- Meals Section Preview -->
-        <div class="section-header" style="margin-top:24px;">
-            <span class="section-title">Daily Meals & Recipes</span>
-            <button class="btn-secondary btn-sm" onclick="openMealModal()">Swap / Edit Meal</button>
-        </div>
-        <div id="meals-list"></div>
-    </div>
-
-    <!-- Tab 2: Full Week Calendar View -->
-    <div id="tab-view-week" class="view-content" style="display:none;">
-        <h2 style="font-size:18px; margin-bottom:12px;">This Week at a Glance</h2>
-        <div id="week-overview-container"></div>
-    </div>
-
-    <!-- Tab 3: Missed Reports & Attendance Audit -->
-    <div id="tab-view-reports" class="view-content" style="display:none;">
-        <h2 style="font-size:18px; margin-bottom:12px;">Missed Tasks & Attendance Report</h2>
-        <div class="card">
-            <h4 style="margin-bottom:8px;">Attendance History (IST)</h4>
-            <div id="attendance-history-list"></div>
-        </div>
-        <div class="card">
-            <h4 style="margin-bottom:8px; color:var(--danger);">Missed / Rescheduled Chores</h4>
-            <div id="missed-report-list"></div>
-        </div>
-    </div>
-
-    <!-- Bottom App Navigation Bar -->
-    <div class="bottom-nav">
-        <button class="nav-item active" id="nav-today" onclick="switchTab('today')">
-            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-            Daily
-        </button>
-        <button class="nav-item" id="nav-week" onclick="switchTab('week')">
-            <svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
-            Weekly
-        </button>
-        <button class="nav-item" id="nav-reports" onclick="switchTab('reports')">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
-            Reports
-        </button>
-    </div>
+    </main>
 </div>
 
 <!-- ================= MODALS ================= -->
 
-<!-- Add / Edit Chore Modal -->
-<div class="modal-overlay" id="modal-task">
-    <div class="modal-sheet">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modal-task-title">Add Chore</h3>
-            <button class="icon-btn" onclick="closeModal('modal-task')">✕</button>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Task in English</label>
-            <input type="text" id="task-input-en" placeholder="e.g., Clean Balcony">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Task in Telugu (తెలుగులో వివరణ)</label>
-            <input type="text" id="task-input-te" placeholder="e.g., బాల్కనీ శుభ్రం చేయాలి">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Schedule Date</label>
-            <input type="date" id="task-input-date">
-        </div>
-        <button class="btn-primary" style="width:100%; padding:12px;" onclick="saveChore()">Save Chore</button>
-    </div>
-</div>
-
-<!-- Missed Task Reason Modal -->
-<div class="modal-overlay" id="modal-missed">
-    <div class="modal-sheet">
-        <div class="modal-header">
-            <h3 class="modal-title">Task Not Completed</h3>
-            <button class="icon-btn" onclick="closeModal('modal-missed')">✕</button>
-        </div>
-        <input type="hidden" id="missed-task-id">
-        <div class="form-group">
-            <label class="form-label">Reason for not doing (చేయకపోవడానికి కారణం)</label>
-            <textarea id="missed-reason" rows="3" placeholder="e.g., Water supply cut off, busy, helper felt sick..."></textarea>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Reschedule to another day?</label>
-            <input type="date" id="missed-reschedule-date">
-        </div>
-        <button class="btn-danger" style="width:100%; padding:12px;" onclick="confirmMissedTask()">Save to Missed Log</button>
-    </div>
-</div>
-
-<!-- Meal Edit Modal with YouTube & Servings -->
+<!-- Meal Edit Modal (Notion Inspector Style) -->
 <div class="modal-overlay" id="modal-meal">
-    <div class="modal-sheet">
+    <div class="modal-card">
         <div class="modal-header">
-            <h3 class="modal-title">Edit / Swap Meal</h3>
-            <button class="icon-btn" onclick="closeModal('modal-meal')">✕</button>
+            <h3 class="modal-title">Configure Meal & Recipe</h3>
+            <button class="btn-sm" onclick="closeModal('modal-meal')">✕</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Target Day</label>
+            <select id="modal-meal-day">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
         </div>
         <div class="form-group">
             <label class="form-label">Meal Type</label>
-            <select id="meal-select-type">
+            <select id="modal-meal-type">
                 <option value="breakfast">Breakfast</option>
                 <option value="lunch">Lunch</option>
                 <option value="dinner">Dinner</option>
             </select>
         </div>
         <div class="form-group">
-            <label class="form-label">Dish Name (e.g., Paneer Butter Masala instead of Tomato Curry)</label>
-            <input type="text" id="meal-dish-name" placeholder="Dish name...">
+            <label class="form-label">Dish Name (e.g., Paneer Butter Masala)</label>
+            <input type="text" id="modal-meal-dish" placeholder="Enter dish name...">
         </div>
         <div class="form-group">
-            <label class="form-label">Number of People / Servings (Guests coming?)</label>
-            <input type="number" id="meal-servings" value="2" min="1">
+            <label class="form-label">Servings / Guest Headcount</label>
+            <input type="number" id="modal-meal-servings" value="2" min="1">
         </div>
         <div class="form-group">
-            <label class="form-label">YouTube Recipe Video Link</label>
-            <input type="url" id="meal-yt-link" placeholder="https://www.youtube.com/watch?v=...">
+            <label class="form-label">YouTube Recipe Video URL</label>
+            <input type="url" id="modal-meal-yt" placeholder="https://www.youtube.com/watch?v=...">
         </div>
-        <button class="btn-primary" style="width:100%; padding:12px;" onclick="saveMealPlan()">Update Meal</button>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+            <button onclick="closeModal('modal-meal')">Cancel</button>
+            <button class="btn-primary" onclick="saveMealFromModal()">Save to Weekly Menu</button>
+        </div>
     </div>
 </div>
 
-<!-- Leave / Holiday Modal -->
-<div class="modal-overlay" id="modal-leave">
-    <div class="modal-sheet">
+<!-- Missed Task Reason Modal -->
+<div class="modal-overlay" id="modal-missed">
+    <div class="modal-card">
         <div class="modal-header">
-            <h3 class="modal-title">Mark Leave / Holiday</h3>
-            <button class="icon-btn" onclick="closeModal('modal-leave')">✕</button>
+            <h3 class="modal-title">Task Incomplete Reason</h3>
+            <button class="btn-sm" onclick="closeModal('modal-missed')">✕</button>
+        </div>
+        <input type="hidden" id="missed-task-id">
+        <div class="form-group">
+            <label class="form-label">Why was this task not done? (కారణం)</label>
+            <textarea id="missed-reason" rows="3" placeholder="e.g., Guest arrived, helper unwell, water cut-off..."></textarea>
         </div>
         <div class="form-group">
-            <label class="form-label">Type</label>
-            <select id="leave-type">
-                <option value="Holiday">Official Holiday (పండుగ / సెలవు)</option>
+            <label class="form-label">Reschedule to Date</label>
+            <input type="date" id="missed-reschedule-date">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+            <button onclick="closeModal('modal-missed')">Cancel</button>
+            <button class="btn-red" onclick="confirmMissedTask()">Save to Missed Log</button>
+        </div>
+    </div>
+</div>
+
+<!-- Video Player Modal -->
+<div class="modal-overlay" id="modal-video">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title" id="video-modal-title">Recipe Video</h3>
+            <button class="btn-sm" onclick="closeVideoModal()">✕</button>
+        </div>
+        <div class="video-box" id="video-iframe-box"></div>
+    </div>
+</div>
+
+<!-- Leave Modal -->
+<div class="modal-overlay" id="modal-leave">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">Mark Holiday or Leave</h3>
+            <button class="btn-sm" onclick="closeModal('modal-leave')">✕</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Absence Type</label>
+            <select id="leave-type-select">
+                <option value="Official Holiday">Festival / Holiday (పండుగ సెలవు)</option>
                 <option value="Sick Leave">Sick Leave (అనారోగ్యం)</option>
-                <option value="Personal Leave">Personal Leave (వ్యక్తిగత సెలవు)</option>
+                <option value="Personal Leave">Personal Leave (సెలవు)</option>
             </select>
         </div>
         <div class="form-group">
-            <label class="form-label">Remarks / Note</label>
-            <input type="text" id="leave-note" placeholder="e.g., Sankranti festival">
+            <label class="form-label">Remarks</label>
+            <input type="text" id="leave-remarks-input" placeholder="e.g., Ugadi / Sankranti">
         </div>
-        <button class="btn-warning" style="width:100%; padding:12px;" onclick="confirmLeave()">Record Absence</button>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+            <button onclick="closeModal('modal-leave')">Cancel</button>
+            <button class="btn-yellow" onclick="confirmLeaveRecord()">Save Leave</button>
+        </div>
     </div>
 </div>
 
 <script>
 // --- Indian Standard Time (IST) Helpers ---
 function getISTDate() {
-    // Current IST date object
-    const istString = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-    return new Date(istString);
+    const s = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    return new Date(s);
 }
 
-function formatDateISO(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+function formatDateISO(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
 }
 
-let selectedDate = formatDateISO(getISTDate());
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Live Clock in IST
+let activeDate = formatDateISO(getISTDate());
+
+// Live Clock
 setInterval(() => {
-    const timeStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
-    document.getElementById('ist-time-pill').innerText = "IST " + timeStr;
+    const t = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
+    document.getElementById('ist-clock').innerText = "IST " + t;
 }, 1000);
 
-// --- State & Local Storage Initialization ---
-let store = JSON.parse(localStorage.getItem('gruha_app_v2')) || {
+// --- Local Storage Management ---
+let db = JSON.parse(localStorage.getItem('gruha_workspace_v3')) || {
     tasks: [],
-    meals: {},
+    weeklyMeals: {
+        "Monday": {
+            breakfast: { dish: "Idli & Peanut Chutney", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Tomato Curry & Rice", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Roti & Tadka Dal", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        },
+        "Tuesday": {
+            breakfast: { dish: "Upma & Podi", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Bendakaya Pulusu & Rice", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Phulka & Mixed Veg Curry", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        },
+        "Wednesday": {
+            breakfast: { dish: "Dosa & Allam Chutney", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Pappu Charu & Potato Fry", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Jeera Rice & Paneer Curry", servings: 3, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        },
+        "Thursday": {
+            breakfast: { dish: "Poha / Atukulu", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Beerakaya Curry & Sambar", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Chapati & Egg/Paneer Bhurji", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        },
+        "Friday": {
+            breakfast: { dish: "Pesarattu & Ginger Pachadi", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Gutti Vankaya & Rice", servings: 4, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Roti & Palak Dal", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        },
+        "Saturday": {
+            breakfast: { dish: "Poori & Aloo Masala", servings: 3, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Tomato Pappu & Majjiga Charu", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Veg Pulao & Raita", servings: 3, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        },
+        "Sunday": {
+            breakfast: { dish: "Medu Vada & Sambar", servings: 4, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Special Biryani & Mirchi Ka Salan", servings: 5, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Light Khichdi & Curd", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        }
+    },
     attendance: {},
-    laundryState: 'idle'
+    laundry: { stage: 'ready' }
 };
 
-function saveStore() {
-    localStorage.setItem('gruha_app_v2', JSON.stringify(store));
+function saveDB() {
+    localStorage.setItem('gruha_workspace_v3', JSON.stringify(db));
 }
 
-// Generate weekly standard baseline
-function seedStandardSchedule() {
-    const now = getISTDate();
-    const currDay = now.getDay(); // 0: Sun, 1: Mon ...
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - (currDay === 0 ? 6 : currDay - 1));
+// Generate Standard Chores Baseline
+function seedStandardTasks() {
+    const today = getISTDate();
+    const currDay = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (currDay === 0 ? 6 : currDay - 1));
 
-    // For all 7 days of the current week
     for (let i = 0; i < 7; i++) {
         const d = new Date(monday);
         d.setDate(monday.getDate() + i);
-        const dStr = formatDateISO(d);
-        const dayIndex = d.getDay();
+        const iso = formatDateISO(d);
+        const dIndex = d.getDay();
 
-        // 1. Daily chores: Sweeping & Mopping
-        addChoreIfNotExists(dStr, "Sweep the entire house", "ఇల్లంతా ఊడ్చాలి", "daily");
-        addChoreIfNotExists(dStr, "Mop all floors", "ఇల్లంతా తడిగుడ్డతో తుడవాలి", "daily");
+        // 1. Daily Chores
+        ensureTask(iso, "Sweep the house thoroughly", "ఇల్లంతా ఊడ్చాలి", "daily");
+        ensureTask(iso, "Mop all rooms", "ఇల్లంతా తడిగుడ్డతో తుడవాలి", "daily");
 
-        // 2. Weekly chores
-        if (dayIndex === 1) { // Monday
-            addChoreIfNotExists(dStr, "Dusting furniture & cobwebs", "బూజులు దులపడం, ఫర్నిచర్ దుమ్ము తుడవడం", "weekly");
+        // 2. Weekly Specific Chores
+        if (dIndex === 1) { // Monday Dusting
+            ensureTask(iso, "Dusting furniture and removing cobwebs", "బూజులు దులపడం, ఫర్నిచర్ దుమ్ము తుడవడం", "weekly");
         }
-        if (dayIndex === 6) { // Saturday
-            addChoreIfNotExists(dStr, "Bathroom deep cleaning", "బాత్‌రూమ్‌లు శుభ్రంగా కడగాలి", "weekly");
-        }
-
-        // 3. Default meals
-        if (!store.meals[dStr]) {
-            store.meals[dStr] = {
-                breakfast: { dish: "Idli & Sambar", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-                lunch: { dish: "Tomato Curry & Rice", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-                dinner: { dish: "Roti & Mixed Dal", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
-            };
+        if (dIndex === 6) { // Saturday Bathroom Deep Cleaning
+            ensureTask(iso, "Bathroom deep cleaning & scrub", "బాత్‌రూమ్‌లు క్లీన్ చేయడం", "weekly");
         }
     }
-    saveStore();
+    saveDB();
 }
 
-function addChoreIfNotExists(dateStr, en, te, recurrence) {
-    const found = store.tasks.some(t => t.date === dateStr && t.title_en === en);
-    if (!found) {
-        store.tasks.push({
+function ensureTask(iso, en, te, recurrence) {
+    const exists = db.tasks.some(t => t.date === iso && t.title_en === en);
+    if (!exists) {
+        db.tasks.push({
             id: Date.now() + Math.random(),
-            date: dateStr,
+            date: iso,
             title_en: en,
             title_te: te,
             recurrence: recurrence,
@@ -570,234 +685,205 @@ function addChoreIfNotExists(dateStr, en, te, recurrence) {
     }
 }
 
-// --- Calendar Strip Component ---
-function renderCalendarStrip() {
-    const container = document.getElementById('calendar-strip');
-    container.innerHTML = '';
-    const now = getISTDate();
-    const currDay = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - (currDay === 0 ? 6 : currDay - 1));
+// --- Tab Switching ---
+function setTab(tab) {
+    ['daily', 'meals', 'week', 'audit'].forEach(t => {
+        document.getElementById(`view-${t}`).style.display = t === tab ? 'block' : 'none';
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    });
 
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        const iso = formatDateISO(d);
-
-        const card = document.createElement('div');
-        card.className = `cal-day-card ${iso === selectedDate ? 'active' : ''}`;
-        card.onclick = () => {
-            selectedDate = iso;
-            renderCalendarStrip();
-            renderDailyView();
-        };
-
-        card.innerHTML = `
-            <div class="cal-day-name">${dayNames[d.getDay()]}</div>
-            <div class="cal-day-num">${d.getDate()}</div>
-            <div class="cal-dot"></div>
-        `;
-        container.appendChild(card);
-    }
+    if (tab === 'daily') renderDailyTasks();
+    if (tab === 'meals') renderWholeWeekMealsTable();
+    if (tab === 'week') renderWeekScheduleBoard();
+    if (tab === 'audit') renderAuditView();
 }
 
-// --- Daily Tasks & Meals Renderer ---
-function renderDailyView() {
-    // 1. Chores
-    const taskContainer = document.getElementById('tasks-list');
-    taskContainer.innerHTML = '';
-    const dayTasks = store.tasks.filter(t => t.date === selectedDate);
+// --- Daily Tasks View (Google Tasks Style) ---
+function renderDailyTasks() {
+    document.getElementById('selected-date-picker').value = activeDate;
+    const dObj = new Date(activeDate + "T00:00:00");
+    const dayName = dayNames[dObj.getDay()];
+    document.getElementById('current-day-label').innerText = `${dayName} (${activeDate})`;
 
-    if (dayTasks.length === 0) {
-        taskContainer.innerHTML = '<p style="color:var(--slate-500); font-size:14px; text-align:center; padding:20px 0;">No chores for this date.</p>';
+    const container = document.getElementById('tasks-list');
+    container.innerHTML = '';
+
+    const tasks = db.tasks.filter(t => t.date === activeDate);
+    if (tasks.length === 0) {
+        container.innerHTML = `<p style="padding:16px 0; color:var(--text-muted); font-size:13px;">No chores scheduled for this date.</p>`;
     } else {
-        dayTasks.forEach(t => {
-            const el = document.createElement('div');
-            el.className = `task-item ${t.status === 'completed' ? 'completed' : ''}`;
+        tasks.forEach(t => {
+            const row = document.createElement('div');
+            row.className = `task-row ${t.status === 'completed' ? 'completed' : ''}`;
 
-            let actionBtns = '';
+            let actionsHtml = '';
             if (t.isLaundry && t.laundryType === 'dry' && t.status === 'pending') {
-                actionBtns = `
-                    <button class="btn-warning btn-sm" onclick="laundryAction(${t.id}, 'not_dry')">Not Dry (ఆరలేదు)</button>
-                    <button class="btn-success btn-sm" onclick="laundryAction(${t.id}, 'dry_done')">Dry (ఆరాయి)</button>
+                actionsHtml = `
+                    <button class="btn-yellow btn-sm" onclick="laundryAction(${t.id}, 'not_dry')">Not Dry (ఆరలేదు)</button>
+                    <button class="btn-green btn-sm" onclick="laundryAction(${t.id}, 'dry_done')">Dry (ఆరాయి)</button>
                 `;
             } else if (t.isLaundry && t.laundryType === 'fold' && t.status === 'pending') {
-                actionBtns = `
-                    <button class="btn-success btn-sm" onclick="laundryAction(${t.id}, 'fold_done')">Folded (మడిచాము)</button>
+                actionsHtml = `
+                    <button class="btn-green btn-sm" onclick="laundryAction(${t.id}, 'fold_done')">Folded (మడిచాము)</button>
                 `;
             } else if (t.status === 'pending') {
-                actionBtns = `
-                    <button class="btn-success btn-sm" onclick="completeTask(${t.id})">✓ Done</button>
-                    <button class="btn-danger btn-sm" onclick="openMissedModal(${t.id})">✗ Missed</button>
+                actionsHtml = `
+                    <button class="btn-red btn-sm" onclick="openMissedModal(${t.id})">✗ Missed</button>
                 `;
-            } else if (t.status === 'completed') {
-                actionBtns = `<span class="tag" style="background:var(--success-light); color:var(--success); padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700;">DONE</span>`;
-            } else if (t.status === 'missed') {
-                actionBtns = `<span class="tag" style="background:var(--danger-light); color:var(--danger); padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700;">MISSED</span>`;
             }
 
-            el.innerHTML = `
-                <div class="task-details">
-                    <div class="task-title">${t.title_en}</div>
-                    <div class="task-subtitle">${t.title_te}</div>
-                    ${t.comment ? `<div style="font-size:12px; color:var(--danger); margin-top:4px;">Reason: ${t.comment}</div>` : ''}
+            row.innerHTML = `
+                <div class="task-checkbox" onclick="toggleTaskCompletion(${t.id})"></div>
+                <div class="task-content">
+                    <div class="task-text">${t.title_en}</div>
+                    <div class="task-subtext">${t.title_te}</div>
+                    ${t.comment ? `<div style="font-size:11px; color:var(--text-red); margin-top:2px;">Reason: ${t.comment}</div>` : ''}
                 </div>
                 <div class="task-actions">
-                    <button class="icon-btn" onclick="speakBothLanguages('${encodeURIComponent(t.title_te)}', '${encodeURIComponent(t.title_en)}', this)" title="Speak in Telugu & English">🔊</button>
-                    ${actionBtns}
+                    <button class="btn-sm" style="border:none; background:none; font-size:16px;" onclick="speakTask('${encodeURIComponent(t.title_te)}', '${encodeURIComponent(t.title_en)}')" title="Speak in Telugu & English">🔊</button>
+                    ${actionsHtml}
                 </div>
             `;
-            taskContainer.appendChild(el);
+            container.appendChild(row);
         });
     }
 
-    // 2. Meals
-    const mealContainer = document.getElementById('meals-list');
-    mealContainer.innerHTML = '';
-    const dayMeals = store.meals[selectedDate] || {};
+    // Update Laundry Box
+    updateLaundryBox();
+    renderDailyMealsSummary(dayName);
+}
 
-    ['breakfast', 'lunch', 'dinner'].forEach(mType => {
-        const item = dayMeals[mType];
-        if (!item) return;
+function toggleTaskCompletion(id) {
+    const t = db.tasks.find(x => x.id === id);
+    if (t) {
+        t.status = t.status === 'completed' ? 'pending' : 'completed';
+        saveDB();
+        renderDailyTasks();
+    }
+}
 
-        let embedHtml = '';
-        if (item.yt && item.yt.includes('v=')) {
-            const vidId = item.yt.split('v=')[1].split('&')[0];
-            embedHtml = `<div class="video-box"><iframe src="https://www.youtube.com/embed/${vidId}" allowfullscreen></iframe></div>`;
-        }
+function quickAddTask() {
+    const en = document.getElementById('inline-task-en').value.trim();
+    const te = document.getElementById('inline-task-te').value.trim();
+    if (!en) return;
 
-        const card = document.createElement('div');
-        card.className = 'meal-card';
-        card.innerHTML = `
-            <div class="meal-header">
-                <span class="meal-type">${mType}</span>
-                <span class="servings-tag">Servings: ${item.servings} people</span>
-            </div>
-            <div class="meal-body">
-                <div class="dish-name">${item.dish}</div>
-                ${embedHtml}
-            </div>
-        `;
-        mealContainer.appendChild(card);
+    db.tasks.push({
+        id: Date.now(),
+        date: activeDate,
+        title_en: en,
+        title_te: te || en,
+        status: 'pending'
     });
+    saveDB();
+    document.getElementById('inline-task-en').value = '';
+    document.getElementById('inline-task-te').value = '';
+    renderDailyTasks();
+}
 
-    renderAttendanceHeader();
-    updateLaundryUI();
+function onDateChange() {
+    activeDate = document.getElementById('selected-date-picker').value;
+    renderDailyTasks();
 }
 
 // --- Laundry Workflow State Machine ---
-function triggerNightWash() {
-    const nextDay = new Date(selectedDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    const nextDayStr = formatDateISO(nextDay);
+function loadWasherTonight() {
+    const nextDate = new Date(activeDate + "T00:00:00");
+    nextDate.setDate(nextDate.getDate() + 1);
+    const nextStr = formatDateISO(nextDate);
 
-    store.laundryState = 'drying';
-    store.tasks.push({
+    db.laundry.stage = 'drying';
+    db.tasks.push({
         id: Date.now(),
-        date: nextDayStr,
+        date: nextStr,
         title_en: "Dry clothes on clothesline",
-        title_te: "వాషింగ్ మెషీన్ బట్టలు ఎండలో ఆరవేయాలి",
+        title_te: "వాషింగ్ మెషీన్ బట్టలు ఆరవేయాలి",
         isLaundry: true,
         laundryType: 'dry',
         status: 'pending'
     });
-    saveStore();
-    renderDailyView();
-    alert("Laundry logged! 'Dry clothes' task added for tomorrow (" + nextDayStr + ").");
+    saveDB();
+    renderDailyTasks();
+    alert(`Night load logged! "Dry clothes" task scheduled for tomorrow (${nextStr}).`);
 }
 
 function laundryAction(taskId, action) {
-    const t = store.tasks.find(x => x.id === taskId);
+    const t = db.tasks.find(x => x.id === taskId);
     if (!t) return;
 
     if (action === 'not_dry') {
-        const nextDay = new Date(t.date);
+        const nextDay = new Date(t.date + "T00:00:00");
         nextDay.setDate(nextDay.getDate() + 1);
-        const nextDayStr = formatDateISO(nextDay);
+        const nextStr = formatDateISO(nextDay);
 
         t.status = 'missed';
-        t.comment = 'Not dry yet, carried over.';
+        t.comment = 'Clothes not dry yet, pushed to next day.';
 
-        store.tasks.push({
+        db.tasks.push({
             id: Date.now(),
-            date: nextDayStr,
+            date: nextStr,
             title_en: "Dry clothes (Carried over)",
-            title_te: "ఆరని బట్టలు మళ్ళీ ఆరవేయాలి",
+            title_te: "ఆరని బట్టలు మళ్ళీ ఎండలో ఆరవేయాలి",
             isLaundry: true,
             laundryType: 'dry',
             status: 'pending'
         });
-        alert("Pushed drying task to " + nextDayStr);
+        alert(`Pushed drying task to tomorrow (${nextStr}).`);
     } else if (action === 'dry_done') {
         t.status = 'completed';
-        store.laundryState = 'folding';
+        db.laundry.stage = 'folding';
 
-        const nextDay = new Date(t.date);
+        const nextDay = new Date(t.date + "T00:00:00");
         nextDay.setDate(nextDay.getDate() + 1);
-        const nextDayStr = formatDateISO(nextDay);
+        const nextStr = formatDateISO(nextDay);
 
-        store.tasks.push({
+        db.tasks.push({
             id: Date.now(),
-            date: nextDayStr,
-            title_en: "Fold and store clothes",
-            title_te: "ఆరిన బట్టలు మడతపెట్టి సర్దాలి",
+            date: nextStr,
+            title_en: "Fold and arrange dried clothes",
+            title_te: "ఆరిన బట్టలు మడతపెట్టాలి",
             isLaundry: true,
             laundryType: 'fold',
             status: 'pending'
         });
-        alert("Drying complete! Folding task scheduled for " + nextDayStr);
+        alert(`Clothes dried! Added folding task for ${nextStr}.`);
     } else if (action === 'fold_done') {
         t.status = 'completed';
-        store.laundryState = 'reload_night';
+        db.laundry.stage = 'ready';
 
-        // Add tonight's washer reminder
-        store.tasks.push({
+        db.tasks.push({
             id: Date.now(),
             date: t.date,
-            title_en: "Night: Put clothes in washing machine",
-            title_te: "రాత్రికి వాషింగ్ మెషీన్‌లో బట్టలు వేయాలి",
+            title_en: "Night: Load washing machine for tomorrow",
+            title_te: "రాత్రికి వాషింగ్ మెషీన్‌లో బట్టలు వేయండి",
             status: 'pending'
         });
-        alert("Clothes folded! Reminder created for tonight to load the washer.");
+        alert("Folding done! Scheduled night reminder to reload washing machine.");
     }
-    saveStore();
-    renderDailyView();
+    saveDB();
+    renderDailyTasks();
 }
 
-function updateLaundryUI() {
-    const steps = ['wash', 'dry', 'fold', 'reload'];
-    steps.forEach(s => document.getElementById(`step-${s}`)?.classList.remove('active'));
-
-    const desc = document.getElementById('laundry-current-desc');
-    if (store.laundryState === 'drying') {
-        document.getElementById('step-dry')?.classList.add('active');
-        if (desc) desc.innerText = "Clothes are currently hanging to dry";
-    } else if (store.laundryState === 'folding') {
-        document.getElementById('step-fold')?.classList.add('active');
-        if (desc) desc.innerText = "Clothes are dry, ready for folding";
-    } else if (store.laundryState === 'reload_night') {
-        document.getElementById('step-reload')?.classList.add('active');
-        if (desc) desc.innerText = "Folded! Remember to reload washer tonight";
+function updateLaundryBox() {
+    const desc = document.getElementById('laundry-stage-desc');
+    if (db.laundry.stage === 'drying') {
+        desc.innerText = "Current Cycle: Clothes are on the clothesline. Check if dry!";
+    } else if (db.laundry.stage === 'folding') {
+        desc.innerText = "Current Cycle: Clothes are dry and ready for folding.";
     } else {
-        document.getElementById('step-wash')?.classList.add('active');
-        if (desc) desc.innerText = "Ready for tonight's wash";
+        desc.innerText = "Current Cycle: Ready for tonight's wash load.";
     }
 }
 
 // --- Bilingual Voice Synthesis (Telugu + English) ---
-function speakBothLanguages(teEncoded, enEncoded, btnElement) {
+function speakTask(teEncoded, enEncoded) {
     if (!('speechSynthesis' in window)) {
-        alert("Voice synthesis is not supported on this browser.");
+        alert("Speech synthesis is not supported on this browser.");
         return;
     }
     const te = decodeURIComponent(teEncoded);
     const en = decodeURIComponent(enEncoded);
 
     window.speechSynthesis.cancel();
-    btnElement.classList.add('speaking');
-
     const utterEn = new SpeechSynthesisUtterance(en);
     utterEn.lang = 'en-IN';
     utterEn.rate = 0.9;
@@ -807,63 +893,206 @@ function speakBothLanguages(teEncoded, enEncoded, btnElement) {
     utterTe.rate = 0.85;
 
     utterEn.onend = () => window.speechSynthesis.speak(utterTe);
-    utterTe.onend = () => btnElement.classList.remove('speaking');
-    utterTe.onerror = () => btnElement.classList.remove('speaking');
-
     window.speechSynthesis.speak(utterEn);
 }
 
+// --- TAB 2: WHOLE WEEK MEAL PLANNER TABLE (Notion Style) ---
+function renderWholeWeekMealsTable() {
+    const tbody = document.getElementById('weekly-meals-tbody');
+    tbody.innerHTML = '';
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    days.forEach(d => {
+        const row = document.createElement('tr');
+        const meal = db.weeklyMeals[d] || {};
+
+        const cell = (type) => {
+            const m = meal[type] || { dish: 'Not set', servings: 2, yt: '' };
+            return `
+                <div class="meal-cell">
+                    <span class="meal-dish-name">${m.dish}</span>
+                    <span class="servings-pill">${m.servings} people</span>
+                    ${m.yt ? `<button class="yt-link-btn" onclick="playRecipeVideo('${m.dish}', '${m.yt}')">▶ Watch Recipe</button>` : ''}
+                </div>
+            `;
+        };
+
+        row.innerHTML = `
+            <td><strong>${d}</strong></td>
+            <td>${cell('breakfast')}</td>
+            <td>${cell('lunch')}</td>
+            <td>${cell('dinner')}</td>
+            <td>
+                <button class="btn-sm" onclick="openEditMealForDay('${d}')">Edit</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderDailyMealsSummary(dayName) {
+    const container = document.getElementById('today-meals-summary');
+    container.innerHTML = '';
+    const meal = db.weeklyMeals[dayName] || {};
+
+    ['breakfast', 'lunch', 'dinner'].forEach(type => {
+        const m = meal[type] || { dish: 'Not Planned', servings: 2, yt: '' };
+        const box = document.createElement('div');
+        box.className = 'week-card';
+        box.innerHTML = `
+            <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">${type}</div>
+            <div style="font-size:14px; font-weight:700; margin:4px 0;">${m.dish}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                <span class="servings-pill">${m.servings} Servings</span>
+                ${m.yt ? `<button class="yt-link-btn" onclick="playRecipeVideo('${m.dish}', '${m.yt}')">▶ Recipe</button>` : ''}
+            </div>
+        `;
+        container.appendChild(box);
+    });
+}
+
+function openEditMealForDay(day) {
+    document.getElementById('modal-meal-day').value = day;
+    openModal('modal-meal');
+}
+
+function openEditMealModal() {
+    openModal('modal-meal');
+}
+
+function saveMealFromModal() {
+    const day = document.getElementById('modal-meal-day').value;
+    const type = document.getElementById('modal-meal-type').value;
+    const dish = document.getElementById('modal-meal-dish').value.trim();
+    const servings = parseInt(document.getElementById('modal-meal-servings').value) || 2;
+    const yt = document.getElementById('modal-meal-yt').value.trim();
+
+    if (!dish) { alert("Please enter a dish name"); return; }
+
+    if (!db.weeklyMeals[day]) db.weeklyMeals[day] = {};
+    db.weeklyMeals[day][type] = { dish, servings, yt };
+
+    saveDB();
+    closeModal('modal-meal');
+    renderWholeWeekMealsTable();
+    renderDailyTasks();
+    alert(`Updated ${day}'s ${type} to ${dish}!`);
+}
+
+// --- Video Modal ---
+function playRecipeVideo(dishTitle, ytUrl) {
+    let videoId = '';
+    if (ytUrl.includes('v=')) {
+        videoId = ytUrl.split('v=')[1].split('&')[0];
+    } else if (ytUrl.includes('youtu.be/')) {
+        videoId = ytUrl.split('youtu.be/')[1];
+    }
+    if (!videoId) { alert("Invalid YouTube URL"); return; }
+
+    document.getElementById('video-modal-title').innerText = dishTitle + " Recipe";
+    document.getElementById('video-iframe-box').innerHTML = `
+        <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    `;
+    openModal('modal-video');
+}
+
+function closeVideoModal() {
+    document.getElementById('video-iframe-box').innerHTML = '';
+    closeModal('modal-video');
+}
+
+// --- TAB 3: WEEKLY SCHEDULE BOARD ---
+function renderWeekScheduleBoard() {
+    const container = document.getElementById('week-grid-container');
+    container.innerHTML = '';
+
+    const today = getISTDate();
+    const currDay = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (currDay === 0 ? 6 : currDay - 1));
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const iso = formatDateISO(d);
+        const dayTitle = dayNames[d.getDay()];
+
+        const dayTasks = db.tasks.filter(t => t.date === iso);
+        const dayMeals = db.weeklyMeals[dayTitle] || {};
+
+        const card = document.createElement('div');
+        card.className = 'week-card';
+        card.innerHTML = `
+            <div class="week-card-header">
+                <div>
+                    <div class="week-day-title">${dayTitle}</div>
+                    <small style="color:var(--text-muted); font-size:11px;">${iso}</small>
+                </div>
+                <button class="btn-sm" onclick="jumpToDate('${iso}')">View</button>
+            </div>
+            <div style="font-size:12px; margin-bottom:8px;">
+                🥘 <strong>Lunch:</strong> ${dayMeals.lunch?.dish || 'Not set'} (${dayMeals.lunch?.servings || 2} ppl)
+            </div>
+            <div style="font-size:12px; color:var(--text-muted);">
+                <strong>Chores (${dayTasks.length}):</strong>
+                <ul style="padding-left:16px; margin-top:4px;">
+                    ${dayTasks.map(t => `<li style="${t.status === 'completed' ? 'text-decoration:line-through;' : ''}">${t.title_en}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+        container.appendChild(card);
+    }
+}
+
+function jumpToDate(iso) {
+    activeDate = iso;
+    setTab('daily');
+}
+
 // --- Attendance Handlers ---
-function quickPunch(type) {
+function punchAttendance(type) {
     const timeStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
-    if (!store.attendance[selectedDate]) store.attendance[selectedDate] = {};
+    if (!db.attendance[activeDate]) db.attendance[activeDate] = {};
 
     if (type === 'in') {
-        store.attendance[selectedDate].in = timeStr;
-        store.attendance[selectedDate].status = 'Present';
+        db.attendance[activeDate].in = timeStr;
+        db.attendance[activeDate].status = 'Present';
     } else {
-        store.attendance[selectedDate].out = timeStr;
+        db.attendance[activeDate].out = timeStr;
     }
-    saveStore();
-    renderAttendanceHeader();
-    alert(`Attendance ${type.toUpperCase()} recorded at ${timeStr} (IST)`);
+    saveDB();
+    renderAttendanceBanner();
+    alert(`Attendance logged: ${type.toUpperCase()} at ${timeStr} (IST)`);
 }
 
-function confirmLeave() {
-    const type = document.getElementById('leave-type').value;
-    const note = document.getElementById('leave-note').value;
-    store.attendance[selectedDate] = { status: 'Leave', type: type, note: note };
-    saveStore();
+function confirmLeaveRecord() {
+    const type = document.getElementById('leave-type-select').value;
+    const remarks = document.getElementById('leave-remarks-input').value;
+    db.attendance[activeDate] = { status: 'Leave', type, remarks };
+    saveDB();
     closeModal('modal-leave');
-    renderAttendanceHeader();
-    alert("Day marked as Leave/Holiday. Will not count as missed tasks.");
+    renderAttendanceBanner();
+    alert("Day marked as Leave/Holiday. Chores will not be penalized.");
 }
 
-function renderAttendanceHeader() {
-    const badge = document.getElementById('att-badge');
-    const att = store.attendance[selectedDate];
-
+function renderAttendanceBanner() {
+    const att = db.attendance[activeDate];
+    const el = document.getElementById('att-summary-text');
     if (!att) {
-        badge.innerHTML = `<span style="color:var(--slate-500)">Not Checked In</span>`;
+        el.innerText = `Not punched in for ${activeDate}`;
     } else if (att.status === 'Leave') {
-        badge.innerHTML = `<span style="color:var(--warning); font-weight:700;">Leave: ${att.type}</span>`;
+        el.innerHTML = `<span style="color:var(--text-yellow); font-weight:600;">Authorized Leave: ${att.type} (${att.remarks || 'No notes'})</span>`;
     } else {
-        badge.innerHTML = `<span style="color:var(--success); font-weight:700;">Present</span> <small>(In: ${att.in || '-'} | Out: ${att.out || '-'})</small>`;
+        el.innerHTML = `<span style="color:var(--text-green); font-weight:600;">Present</span> (In: ${att.in || '-'} | Out: ${att.out || 'Active'})`;
     }
 }
 
-// --- Task Completion & Missed Modals ---
-function completeTask(id) {
-    const t = store.tasks.find(x => x.id === id);
-    if (t) t.status = 'completed';
-    saveStore();
-    renderDailyView();
-}
-
+// --- Missed Task Dialog ---
 function openMissedModal(id) {
     document.getElementById('missed-task-id').value = id;
     document.getElementById('missed-reason').value = '';
-    const tomorrow = new Date(selectedDate);
+    const tomorrow = new Date(activeDate + "T00:00:00");
     tomorrow.setDate(tomorrow.getDate() + 1);
     document.getElementById('missed-reschedule-date').value = formatDateISO(tomorrow);
     openModal('modal-missed');
@@ -871,190 +1100,85 @@ function openMissedModal(id) {
 
 function confirmMissedTask() {
     const id = parseFloat(document.getElementById('missed-task-id').value);
-    const reason = document.getElementById('missed-reason').value || 'No reason provided';
-    const rescheduleDate = document.getElementById('missed-reschedule-date').value;
+    const reason = document.getElementById('missed-reason').value || 'Not reported';
+    const reschedule = document.getElementById('missed-reschedule-date').value;
 
-    const t = store.tasks.find(x => x.id === id);
+    const t = db.tasks.find(x => x.id === id);
     if (t) {
         t.status = 'missed';
         t.comment = reason;
 
-        if (rescheduleDate) {
-            store.tasks.push({
+        if (reschedule) {
+            db.tasks.push({
                 id: Date.now(),
-                date: rescheduleDate,
+                date: reschedule,
                 title_en: t.title_en + " (Rescheduled)",
                 title_te: t.title_te + " (మళ్ళీ కేటాయించబడింది)",
                 status: 'pending'
             });
         }
     }
-    saveStore();
+    saveDB();
     closeModal('modal-missed');
-    renderDailyView();
-    renderReports();
+    renderDailyTasks();
+    alert("Task logged into Missed Chores Report.");
 }
 
-// --- Modal Helper Functions ---
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-function openAddChoreModal() {
-    document.getElementById('task-input-date').value = selectedDate;
-    document.getElementById('task-input-en').value = '';
-    document.getElementById('task-input-te').value = '';
-    openModal('modal-task');
-}
-
-function saveChore() {
-    const en = document.getElementById('task-input-en').value.trim();
-    const te = document.getElementById('task-input-te').value.trim();
-    const dt = document.getElementById('task-input-date').value;
-
-    if (!en) { alert("Please enter task in English"); return; }
-    store.tasks.push({
-        id: Date.now(),
-        date: dt,
-        title_en: en,
-        title_te: te || en,
-        status: 'pending'
-    });
-    saveStore();
-    closeModal('modal-task');
-    renderDailyView();
-}
-
-function openMealModal() {
-    const meals = store.meals[selectedDate] || {};
-    const type = document.getElementById('meal-select-type').value;
-    const current = meals[type] || { dish: '', servings: 2, yt: '' };
-
-    document.getElementById('meal-dish-name').value = current.dish;
-    document.getElementById('meal-servings').value = current.servings;
-    document.getElementById('meal-yt-link').value = current.yt || '';
-    openModal('modal-meal');
-}
-
-function saveMealPlan() {
-    const type = document.getElementById('meal-select-type').value;
-    const dish = document.getElementById('meal-dish-name').value.trim();
-    const servings = parseInt(document.getElementById('meal-servings').value) || 2;
-    const yt = document.getElementById('meal-yt-link').value.trim();
-
-    if (!store.meals[selectedDate]) store.meals[selectedDate] = {};
-    store.meals[selectedDate][type] = { dish, servings, yt };
-
-    saveStore();
-    closeModal('modal-meal');
-    renderDailyView();
-}
-
-// --- Weekly Calendar Overview Tab ---
-function renderWeekOverview() {
-    const container = document.getElementById('week-overview-container');
-    container.innerHTML = '';
-
-    const now = getISTDate();
-    const currDay = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - (currDay === 0 ? 6 : currDay - 1));
-    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        const iso = formatDateISO(d);
-        const dayTasks = store.tasks.filter(t => t.date === iso);
-        const dayMeals = store.meals[iso] || {};
-
-        const dayCard = document.createElement('div');
-        dayCard.className = 'card';
-        dayCard.style.cursor = 'pointer';
-        dayCard.onclick = () => {
-            selectedDate = iso;
-            renderCalendarStrip();
-            switchTab('today');
-        };
-
-        dayCard.innerHTML = `
-            <div class="flex" style="margin-bottom:8px;">
-                <strong>${dayNames[i]} (${iso})</strong>
-                <span class="tag" style="background:var(--primary-light); color:var(--primary); font-size:11px; padding:2px 8px; border-radius:6px; font-weight:700;">
-                    ${dayTasks.length} Chores
-                </span>
-            </div>
-            <div style="font-size:13px; color:var(--slate-700); margin-bottom:4px;">
-                🍲 <strong>Lunch:</strong> ${dayMeals.lunch?.dish || 'Not planned'} (${dayMeals.lunch?.servings || 2} ppl)
-            </div>
-            <div style="font-size:12px; color:var(--slate-500);">
-                🧹 <strong>Key Tasks:</strong> ${dayTasks.slice(0, 2).map(t => t.title_en).join(', ') || 'No chores'}
-            </div>
-        `;
-        container.appendChild(dayCard);
-    }
-}
-
-// --- Reports Tab ---
-function renderReports() {
-    // Attendance history
-    const attContainer = document.getElementById('attendance-history-list');
+// --- Audit & Compliance Tab ---
+function renderAuditView() {
+    // Attendance
+    const attContainer = document.getElementById('attendance-log-list');
     attContainer.innerHTML = '';
-    const attKeys = Object.keys(store.attendance).sort().reverse();
-
-    if (attKeys.length === 0) {
-        attContainer.innerHTML = '<small style="color:var(--slate-500)">No attendance records yet.</small>';
+    const keys = Object.keys(db.attendance).sort().reverse();
+    if (keys.length === 0) {
+        attContainer.innerHTML = '<small style="color:var(--text-muted)">No attendance records.</small>';
     } else {
-        attKeys.slice(0, 7).forEach(dateStr => {
-            const row = store.attendance[dateStr];
+        keys.forEach(k => {
+            const row = db.attendance[k];
             const div = document.createElement('div');
+            div.style.fontSize = '12px';
             div.style.padding = '6px 0';
-            div.style.borderBottom = '1px solid var(--slate-100)';
-            div.style.fontSize = '13px';
-            div.innerHTML = `<strong>${dateStr}</strong>: ${row.status} ${row.in ? `(Punch In: ${row.in}, Out: ${row.out || 'Pending'})` : ''} ${row.note ? `- ${row.note}` : ''}`;
+            div.style.borderBottom = '1px solid var(--border)';
+            div.innerHTML = `<strong>${k}</strong>: ${row.status} ${row.in ? `(In: ${row.in}, Out: ${row.out || 'In progress'})` : ''} ${row.remarks ? `- ${row.remarks}` : ''}`;
             attContainer.appendChild(div);
         });
     }
 
-    // Missed tasks
-    const missedContainer = document.getElementById('missed-report-list');
+    // Missed
+    const missedContainer = document.getElementById('missed-task-log-list');
     missedContainer.innerHTML = '';
-    const missed = store.tasks.filter(t => t.status === 'missed');
-
+    const missed = db.tasks.filter(t => t.status === 'missed');
     if (missed.length === 0) {
-        missedContainer.innerHTML = '<small style="color:var(--slate-500)">No missed tasks! Good job.</small>';
+        missedContainer.innerHTML = '<small style="color:var(--text-muted)">No missed tasks recorded.</small>';
     } else {
         missed.forEach(m => {
             const div = document.createElement('div');
-            div.style.padding = '8px 0';
-            div.style.borderBottom = '1px solid var(--slate-100)';
+            div.style.fontSize = '12px';
+            div.style.padding = '6px 0';
+            div.style.borderBottom = '1px solid var(--border)';
             div.innerHTML = `
-                <div style="font-size:13px; font-weight:700; color:var(--danger);">${m.date}: ${m.title_en}</div>
-                <div style="font-size:12px; color:var(--slate-700);">Reason: ${m.comment}</div>
+                <div style="font-weight:700; color:var(--text-red);">${m.date}: ${m.title_en}</div>
+                <div style="color:var(--text-muted);">Reason: ${m.comment}</div>
             `;
             missedContainer.appendChild(div);
         });
     }
 }
 
-// --- Tab Switcher ---
-function switchTab(tabId) {
-    document.getElementById('tab-view-today').style.display = tabId === 'today' ? 'block' : 'none';
-    document.getElementById('tab-view-week').style.display = tabId === 'week' ? 'block' : 'none';
-    document.getElementById('tab-view-reports').style.display = tabId === 'reports' ? 'block' : 'none';
+// Modal generic
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.getElementById(`nav-${tabId}`)?.classList.add('active');
-
-    if (tabId === 'today') renderDailyView();
-    if (tabId === 'week') renderWeekOverview();
-    if (tabId === 'reports') renderReports();
+function switchRole() {
+    const role = document.getElementById('user-role-select').value;
+    alert(`Switched active perspective to: ${role}`);
 }
 
-// Initialization on load
+// Initial Boot
 window.onload = function() {
-    seedStandardSchedule();
-    renderCalendarStrip();
-    renderDailyView();
+    seedStandardTasks();
+    renderAttendanceBanner();
+    renderDailyTasks();
 };
 </script>
 </body>
