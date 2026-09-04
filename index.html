@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Chores & Meals Manager</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 12px;
+            max-width: 650px;
+            margin: auto;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .flex { display: flex; justify-content: space-between; align-items: center; }
+        .grid { display: grid; gap: 8px; }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        button.alt { background: #e2e8f0; color: #1e293b; }
+        button.success { background: var(--success); }
+        button.danger { background: var(--danger); }
+        button.warning { background: var(--warning); }
+        .speaker-btn { background: none; font-size: 18px; padding: 2px 6px; border: none; cursor: pointer; }
+        .tag {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .tag.completed { background: #dcfce7; color: #15803d; }
+        .tag.pending { background: #fef3c7; color: #b45309; }
+        .tag.missed { background: #fee2e2; color: #b91c1c; }
+        .yt-frame { width: 100%; height: 200px; border-radius: 8px; border: none; margin-top: 8px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header & IST Attendance -->
+<div class="card">
+    <div class="flex">
+        <div>
+            <h3 style="margin:0;">Home Chores & Kitchen</h3>
+            <small id="ist-clock" style="color:#64748b; font-weight:600;"></small>
+        </div>
+        <select id="user-role" style="width:auto;" onchange="switchUser()">
+            <option value="Admin">User: Admin</option>
+            <option value="Helper">User: Helper (పనిమనిషి)</option>
+        </select>
+    </div>
+    <hr style="border:0; border-top:1px solid #e2e8f0; margin:10px 0;">
+    <div class="flex">
+        <div>
+            <strong>Attendance: </strong><span id="att-status" class="tag pending">Not Checked In</span>
+        </div>
+        <div>
+            <button onclick="recordAttendance('in')">Punch In</button>
+            <button class="alt" onclick="recordAttendance('out')">Punch Out</button>
+            <button class="warning" onclick="recordLeave()">Mark Leave</button>
+        </div>
+    </div>
+</div>
+
+<!-- Laundry Automation Pipeline -->
+<div class="card" style="border-left: 4px solid var(--primary);">
+    <div class="flex">
+        <div>
+            <strong>Laundry Workflow</strong><br>
+            <small id="laundry-status-text">Status: Idle</small>
+        </div>
+        <button onclick="startWasherNight()">Night Wash Loaded</button>
+    </div>
+</div>
+
+<!-- Chores for Today -->
+<div class="card">
+    <div class="flex">
+        <h4 style="margin:0;">Today's Chores (రోజువారీ పనులు)</h4>
+        <button class="alt" onclick="addNewChorePrompt()">+ Add Custom Task</button>
+    </div>
+    <div id="tasks-container" class="grid" style="margin-top: 10px;"></div>
+</div>
+
+<!-- Meals & Recipes -->
+<div class="card">
+    <div class="flex">
+        <h4 style="margin:0;">Meals & Recipes (వంటల పట్టిక)</h4>
+        <button onclick="editMealPrompt()">Edit/Swap Meal</button>
+    </div>
+    <div id="meals-container" class="grid" style="margin-top: 10px;"></div>
+</div>
+
+<!-- Missed Tasks Report -->
+<div class="card">
+    <div class="flex">
+        <h4 style="margin:0;">Missed / Incomplete Tasks Log</h4>
+        <button class="alt" onclick="renderReports()">Refresh</button>
+    </div>
+    <div id="report-container" class="grid" style="margin-top: 10px;"></div>
+</div>
+
+<script>
+// --- Indian Standard Time (IST) Helpers ---
+function getISTDateString() {
+    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // YYYY-MM-DD
+}
+function getISTTimeString() {
+    return new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' });
+}
+
+setInterval(() => {
+    document.getElementById('ist-clock').innerText = "IST: " + getISTTimeString();
+}, 1000);
+
+// --- Local Storage Data Initialization ---
+let appData = JSON.parse(localStorage.getItem('home_planner_data')) || {
+    attendance: {},
+    tasks: [],
+    meals: {},
+    laundry: { stage: 'idle', lastUpdated: '' }
+};
+
+function saveData() {
+    localStorage.setItem('home_planner_data', JSON.stringify(appData));
+}
+
+// Generate Standard Daily & Weekly Schedules if empty
+function initializeSchedules() {
+    const today = getISTDateString();
+    const dayOfWeek = new Date().getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+
+    const standardTasks = [
+        { id: 1, title_en: "Sweep the house", title_te: "ఇల్లు ఊడ్చడం", recurring: "daily" },
+        { id: 2, title_en: "Mop the house", title_te: "ఇల్లు తుడవడం", recurring: "daily" }
+    ];
+
+    if (dayOfWeek === 1) { // Monday
+        standardTasks.push({ id: 3, title_en: "Dusting furniture & cobwebs", title_te: "బూజులు దులపడం మరియు దుమ్ము తుడవడం", recurring: "weekly" });
+    }
+    if (dayOfWeek === 6) { // Saturday
+        standardTasks.push({ id: 4, title_en: "Bathroom deep cleaning", title_te: "బాత్‌రూమ్ క్లీనింగ్", recurring: "weekly" });
+    }
+
+    standardTasks.forEach(st => {
+        const exists = appData.tasks.find(t => t.date === today && t.title_en === st.title_en);
+        if (!exists) {
+            appData.tasks.push({
+                id: Date.now() + Math.random(),
+                date: today,
+                title_en: st.title_en,
+                title_te: st.title_te,
+                status: 'pending',
+                comment: ''
+            });
+        }
+    });
+
+    // Default meals for today
+    if (!appData.meals[today]) {
+        appData.meals[today] = {
+            breakfast: { dish: "Idli & Sambar", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+            lunch: { dish: "Tomato Curry & Rice", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+            dinner: { dish: "Roti & Dal", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+        };
+    }
+    saveData();
+}
+
+// --- Attendance Management ---
+function recordAttendance(type) {
+    const today = getISTDateString();
+    const time = getISTTimeString();
+    if (!appData.attendance[today]) appData.attendance[today] = {};
+
+    if (type === 'in') {
+        appData.attendance[today].punch_in = time;
+        appData.attendance[today].status = 'Present';
+    } else {
+        appData.attendance[today].punch_out = time;
+    }
+    saveData();
+    renderAttendance();
+}
+
+function recordLeave() {
+    const reason = prompt("Enter leave or holiday reason (సెలవు కారణం):");
+    if (!reason) return;
+    const today = getISTDateString();
+    appData.attendance[today] = { status: 'On Leave', reason: reason, time: getISTTimeString() };
+    saveData();
+    renderAttendance();
+}
+
+function renderAttendance() {
+    const today = getISTDateString();
+    const record = appData.attendance[today];
+    const badge = document.getElementById('att-status');
+    if (!record) {
+        badge.innerText = "Not Checked In";
+        badge.className = "tag pending";
+    } else if (record.status === 'On Leave') {
+        badge.innerText = `Leave (${record.reason})`;
+        badge.className = "tag missed";
+    } else {
+        badge.innerText = `Present (In: ${record.punch_in || '-'} | Out: ${record.punch_out || '-'})`;
+        badge.className = "tag completed";
+    }
+}
+
+// --- Bilingual Voice Synthesis (Telugu + English) ---
+function speakTask(teText, enText) {
+    if (!('speechSynthesis' in window)) {
+        alert("Speech synthesis is not supported on this browser.");
+        return;
+    }
+    window.speechSynthesis.cancel();
+
+    // 1. Speak English
+    const utterEn = new SpeechSynthesisUtterance(enText);
+    utterEn.lang = 'en-IN';
+
+    // 2. Speak Telugu sequentially
+    const utterTe = new SpeechSynthesisUtterance(teText);
+    utterTe.lang = 'te-IN';
+
+    utterEn.onend = () => window.speechSynthesis.speak(utterTe);
+    window.speechSynthesis.speak(utterEn);
+}
+
+// --- Laundry Workflow State Machine ---
+function startWasherNight() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+    appData.laundry = { stage: 'drying_pending', nextDate: tomorrowStr };
+    
+    // Add drying task for tomorrow
+    appData.tasks.push({
+        id: Date.now(),
+        date: tomorrowStr,
+        title_en: "Dry washed clothes on clothesline",
+        title_te: "వాషింగ్ మెషీన్ బట్టలు ఆరవేయాలి",
+        isLaundry: true,
+        laundryType: 'dry',
+        status: 'pending'
+    });
+
+    alert("Clothes logged in washer! 'Dry clothes' task added for tomorrow.");
+    saveData();
+    renderTasks();
+}
+
+function handleLaundryAction(taskId, action) {
+    const today = getISTDateString();
+    const tIndex = appData.tasks.findIndex(t => t.id === taskId);
+    if (tIndex === -1) return;
+
+    if (action === 'not_dry') {
+        const nextDay = new Date();
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextDayStr = nextDay.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+        appData.tasks[tIndex].status = 'rescheduled';
+        appData.tasks[tIndex].comment = 'Clothes not dry yet, carried over.';
+
+        appData.tasks.push({
+            id: Date.now(),
+            date: nextDayStr,
+            title_en: "Dry clothes (Carried over)",
+            title_te: "ఆరని బట్టలు మళ్ళీ ఎండలో ఆరవేయాలి",
+            isLaundry: true,
+            laundryType: 'dry',
+            status: 'pending'
+        });
+        alert("Carried over drying task to tomorrow.");
+    } else if (action === 'dry_done') {
+        appData.tasks[tIndex].status = 'completed';
+
+        // Add folding for tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+        appData.tasks.push({
+            id: Date.now(),
+            date: tomorrowStr,
+            title_en: "Fold and store dried clothes",
+            title_te: "ఆరిన బట్టలు మడతపెట్టాలి",
+            isLaundry: true,
+            laundryType: 'fold',
+            status: 'pending'
+        });
+        alert("Drying complete! Added 'Fold clothes' task for tomorrow.");
+    } else if (action === 'folded_done') {
+        appData.tasks[tIndex].status = 'completed';
+        alert("Clothes folded! Reminder scheduled for tonight: Put dirty clothes in washing machine!");
+        
+        // Add evening reminder task for today
+        appData.tasks.push({
+            id: Date.now(),
+            date: today,
+            title_en: "Night: Load washing machine for tomorrow",
+            title_te: "ఈ రాత్రికి వాషింగ్ మెషీన్‌లో బట్టలు వేయండి",
+            status: 'pending'
+        });
+    }
+    saveData();
+    renderTasks();
+}
+
+// --- Render Tasks ---
+function renderTasks() {
+    const today = getISTDateString();
+    const container = document.getElementById('tasks-container');
+    container.innerHTML = '';
+
+    const todayTasks = appData.tasks.filter(t => t.date === today);
+
+    if (todayTasks.length === 0) {
+        container.innerHTML = '<p style="color:#64748b;">No chores scheduled for today.</p>';
+        return;
+    }
+
+    todayTasks.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'flex';
+        div.style.padding = '8px 0';
+        div.style.borderBottom = '1px solid #f1f5f9';
+
+        let buttons = `
+            <button class="speaker-btn" onclick="speakTask('${t.title_te}', '${t.title_en}')" title="Listen in Telugu & English">🔊</button>
+            <button class="success" onclick="markDone(${t.id})">✓ Done</button>
+            <button class="danger" onclick="markMissed(${t.id})">✗ Missed</button>
+        `;
+
+        if (t.isLaundry && t.laundryType === 'dry' && t.status === 'pending') {
+            buttons = `
+                <button class="speaker-btn" onclick="speakTask('${t.title_te}', '${t.title_en}')">🔊</button>
+                <button class="warning" onclick="handleLaundryAction(${t.id}, 'not_dry')">Not Dry (ఆరలేదు)</button>
+                <button class="success" onclick="handleLaundryAction(${t.id}, 'dry_done')">Dry (ఆరాయి)</button>
+            `;
+        } else if (t.isLaundry && t.laundryType === 'fold' && t.status === 'pending') {
+            buttons = `
+                <button class="speaker-btn" onclick="speakTask('${t.title_te}', '${t.title_en}')">🔊</button>
+                <button class="success" onclick="handleLaundryAction(${t.id}, 'folded_done')">Folded (మడిచాము)</button>
+            `;
+        } else if (t.status === 'completed') {
+            buttons = `<span class="tag completed">Completed</span>`;
+        } else if (t.status === 'missed') {
+            buttons = `<span class="tag missed">Missed</span>`;
+        }
+
+        div.innerHTML = `
+            <div>
+                <strong>${t.title_en}</strong><br>
+                <small style="color:#64748b;">${t.title_te}</small>
+                ${t.comment ? `<br><small style="color:var(--danger);">Note: ${t.comment}</small>` : ''}
+            </div>
+            <div>${buttons}</div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function markDone(id) {
+    const t = appData.tasks.find(x => x.id === id);
+    if (t) t.status = 'completed';
+    saveData();
+    renderTasks();
+}
+
+function markMissed(id) {
+    const reason = prompt("Enter reason for task not done (చేయకపోవడానికి కారణం):");
+    if (!reason) return;
+    const reschedule = confirm("Do you want to reschedule this task for tomorrow?");
+    
+    const t = appData.tasks.find(x => x.id === id);
+    if (t) {
+        t.status = 'missed';
+        t.comment = reason;
+
+        if (reschedule) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+            appData.tasks.push({
+                id: Date.now(),
+                date: tomorrowStr,
+                title_en: t.title_en + " (Rescheduled)",
+                title_te: t.title_te + " (మళ్ళీ కేటాయించబడింది)",
+                status: 'pending'
+            });
+        }
+    }
+    saveData();
+    renderTasks();
+    renderReports();
+}
+
+function addNewChorePrompt() {
+    const en = prompt("Enter task in English:");
+    if (!en) return;
+    const te = prompt("Enter task in Telugu (or translation):", en);
+    appData.tasks.push({
+        id: Date.now(),
+        date: getISTDateString(),
+        title_en: en,
+        title_te: te || en,
+        status: 'pending'
+    });
+    saveData();
+    renderTasks();
+}
+
+// --- Meals & Recipe Rendering ---
+function renderMeals() {
+    const today = getISTDateString();
+    const meals = appData.meals[today] || {};
+    const container = document.getElementById('meals-container');
+    container.innerHTML = '';
+
+    ['breakfast', 'lunch', 'dinner'].forEach(mealType => {
+        const item = meals[mealType];
+        if (!item) return;
+
+        const ytId = item.yt && item.yt.includes('v=') ? item.yt.split('v=')[1].split('&')[0] : '';
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.style.background = '#f8fafc';
+        div.style.margin = '4px 0';
+
+        div.innerHTML = `
+            <div class="flex">
+                <strong style="text-transform: capitalize;">${mealType}: ${item.dish}</strong>
+                <span class="tag pending">Servings: ${item.servings} people</span>
+            </div>
+            ${ytId ? `<iframe class="yt-frame" src="https://www.youtube.com/embed/${ytId}"></iframe>` : ''}
+        `;
+        container.appendChild(div);
+    });
+}
+
+function editMealPrompt() {
+    const today = getISTDateString();
+    const type = prompt("Which meal to edit? (breakfast / lunch / dinner):", "lunch");
+    if (!type || !appData.meals[today][type]) return;
+
+    const current = appData.meals[today][type];
+    const newDish = prompt(`Current dish is '${current.dish}'. Enter new dish:`, current.dish);
+    const newServings = prompt(`Servings count (e.g. guests coming?):`, current.servings);
+    const newYt = prompt(`YouTube Recipe URL:`, current.yt);
+
+    appData.meals[today][type] = {
+        dish: newDish || current.dish,
+        servings: parseInt(newServings) || current.servings,
+        yt: newYt || current.yt
+    };
+    saveData();
+    renderMeals();
+}
+
+// --- Missed Tasks Report ---
+function renderReports() {
+    const container = document.getElementById('report-container');
+    const missed = appData.tasks.filter(t => t.status === 'missed' || t.status === 'rescheduled');
+    
+    if (missed.length === 0) {
+        container.innerHTML = '<p style="color:#64748b;">No missed tasks recorded.</p>';
+        return;
+    }
+
+    container.innerHTML = missed.map(m => `
+        <div style="border-left: 3px solid var(--danger); padding: 6px 10px; background: #fff;">
+            <strong>${m.date} - ${m.title_en}</strong><br>
+            <small style="color:#64748b;">Reason: ${m.comment || 'None provided'}</small>
+        </div>
+    `).join('');
+}
+
+function switchUser() {
+    const role = document.getElementById('user-role').value;
+    alert("Switched active profile to: " + role);
+}
+
+// Initialization on load
+window.onload = function() {
+    initializeSchedules();
+    renderAttendance();
+    renderTasks();
+    renderMeals();
+    renderReports();
+};
+</script>
+</body>
+</html>
