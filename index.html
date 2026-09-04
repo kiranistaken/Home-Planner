@@ -2,528 +2,1059 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>House Chores & Meals Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gruha | House Chores & Kitchen Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --warning: #d97706;
-            --bg: #f1f5f9;
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-500: #64748b;
+            --slate-200: #e2e8f0;
+            --slate-100: #f8fafc;
             --card: #ffffff;
-            --text: #0f172a;
+            --radius: 16px;
+            --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
         }
-        * { box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 12px;
-            max-width: 650px;
-            margin: auto;
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #f1f5f9; color: var(--slate-900); padding-bottom: 90px; }
+        .app-container { max-width: 580px; margin: 0 auto; min-height: 100vh; background: #fff; box-shadow: 0 0 40px rgba(0,0,0,0.05); }
+
+        /* Top Bar */
+        .top-bar {
+            padding: 20px 20px 14px 20px;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            border-bottom: 1px solid var(--slate-100);
         }
-        .card {
-            background: var(--card);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        .header-row { display: flex; justify-content: space-between; align-items: center; }
+        .app-title { font-size: 20px; font-weight: 700; color: var(--slate-900); }
+        .ist-time { font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 20px; }
+        
+        /* Attendance Widget */
+        .att-banner {
+            margin: 12px 0 4px 0;
+            background: var(--slate-100);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .flex { display: flex; justify-content: space-between; align-items: center; }
-        .grid { display: grid; gap: 8px; }
+        .att-status-text { font-size: 13px; font-weight: 600; }
+        .btn-group { display: flex; gap: 6px; }
+
+        /* Buttons */
         button {
-            background: var(--primary);
-            color: white;
             border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
+            outline: none;
             cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
             font-size: 13px;
+            padding: 8px 14px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-        button.alt { background: #e2e8f0; color: #1e293b; }
-        button.success { background: var(--success); }
-        button.danger { background: var(--danger); }
-        button.warning { background: var(--warning); }
-        .speaker-btn { background: none; font-size: 18px; padding: 2px 6px; border: none; cursor: pointer; }
-        .tag {
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
+        button:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger-light); color: var(--danger); }
+        .btn-warning { background: var(--warning-light); color: var(--warning); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 8px; }
+
+        /* Calendar Strip */
+        .calendar-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 14px 20px;
+            background: #fff;
+            scrollbar-width: none;
         }
-        .tag.completed { background: #dcfce7; color: #15803d; }
-        .tag.pending { background: #fef3c7; color: #b45309; }
-        .tag.missed { background: #fee2e2; color: #b91c1c; }
-        .yt-frame { width: 100%; height: 200px; border-radius: 8px; border: none; margin-top: 8px; }
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            margin-top: 4px;
+        .calendar-strip::-webkit-scrollbar { display: none; }
+        .cal-day-card {
+            flex: 0 0 65px;
+            padding: 10px 0;
+            text-align: center;
+            border-radius: 14px;
+            background: var(--slate-100);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .cal-day-card.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        }
+        .cal-day-name { font-size: 11px; font-weight: 600; text-transform: uppercase; opacity: 0.8; }
+        .cal-day-num { font-size: 17px; font-weight: 700; margin-top: 2px; }
+        .cal-dot { width: 5px; height: 5px; background: currentColor; border-radius: 50%; margin: 4px auto 0 auto; opacity: 0.6; }
+
+        /* Content Area */
+        .view-content { padding: 16px 20px; }
+
+        /* Section Headings */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px 0 10px 0;
+        }
+        .section-title { font-size: 15px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Laundry Smart Tracker */
+        .laundry-card {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: #fff;
+            border: none;
+        }
+        .laundry-stepper { display: flex; justify-content: space-between; margin: 12px 0; position: relative; }
+        .laundry-step { text-align: center; font-size: 11px; opacity: 0.7; z-index: 2; }
+        .laundry-step.active { opacity: 1; font-weight: 700; }
+        .laundry-step-circle {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 4px auto;
+            display: flex; align-items: center; justify-content: center; font-size: 11px;
+        }
+        .laundry-step.active .laundry-step-circle { background: #fff; color: var(--primary); font-weight: bold; }
+
+        /* Chore Item */
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid var(--slate-200);
             margin-bottom: 8px;
         }
+        .task-item.completed { background: var(--slate-100); opacity: 0.7; }
+        .task-item.completed .task-title { text-decoration: line-through; }
+        .task-details { flex: 1; padding-right: 10px; }
+        .task-title { font-size: 14px; font-weight: 600; color: var(--slate-900); }
+        .task-subtitle { font-size: 13px; color: var(--slate-500); margin-top: 2px; }
+        .task-meta { font-size: 11px; color: var(--primary); font-weight: 600; margin-top: 4px; }
+        .task-actions { display: flex; align-items: center; gap: 4px; }
+        .icon-btn {
+            background: none;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--slate-500);
+        }
+        .icon-btn:hover { background: var(--slate-100); }
+        .icon-btn.speaking { color: var(--primary); animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        /* Meal Item */
+        .meal-card {
+            background: #fff;
+            border-radius: var(--radius);
+            border: 1px solid var(--slate-200);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .meal-header {
+            padding: 12px 14px;
+            background: var(--slate-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .meal-type { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate-500); }
+        .meal-body { padding: 14px; }
+        .dish-name { font-size: 16px; font-weight: 700; color: var(--slate-900); }
+        .servings-tag {
+            font-size: 12px;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .video-box { margin-top: 10px; border-radius: 10px; overflow: hidden; height: 180px; }
+        .video-box iframe { width: 100%; height: 100%; border: none; }
+
+        /* Bottom Tab Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 580px;
+            background: #fff;
+            border-top: 1px solid var(--slate-200);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 16px 0;
+            z-index: 50;
+        }
+        .nav-item {
+            background: none;
+            flex-direction: column;
+            gap: 2px;
+            color: var(--slate-500);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
+
+        /* Modal Sheet */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-sheet {
+            background: #fff;
+            width: 100%;
+            max-width: 580px;
+            border-radius: 24px 24px 0 0;
+            padding: 24px 20px 34px 20px;
+            animation: slideUp 0.25s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-title { font-size: 17px; font-weight: 700; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { font-size: 13px; font-weight: 600; color: var(--slate-700); margin-bottom: 6px; display: block; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
     </style>
 </head>
 <body>
 
-<!-- Header & IST Attendance -->
-<div class="card">
-    <div class="flex">
-        <div>
-            <h3 style="margin:0;">Home Chores & Kitchen</h3>
-            <small id="ist-clock" style="color:#64748b; font-weight:600;"></small>
+<div class="app-container">
+    <!-- Top Header -->
+    <div class="top-bar">
+        <div class="header-row">
+            <div>
+                <h1 class="app-title">Gruha Planner</h1>
+                <small style="color:var(--slate-500); font-size:12px;">Hyderabad, India</small>
+            </div>
+            <div class="ist-time" id="ist-time-pill">IST 00:00:00</div>
         </div>
-        <select id="user-role" style="width:auto;" onchange="switchUser()">
-            <option value="Admin">User: Admin</option>
-            <option value="Helper">User: Helper (పనిమనిషి)</option>
-        </select>
+
+        <!-- Attendance & Role Bar -->
+        <div class="att-banner">
+            <div>
+                <span style="font-size:11px; color:var(--slate-500); font-weight:600; text-transform:uppercase;">Attendance</span>
+                <div class="att-status-text" id="att-badge">Checking...</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary btn-sm" onclick="quickPunch('in')">Punch In</button>
+                <button class="btn-secondary btn-sm" onclick="quickPunch('out')">Out</button>
+                <button class="btn-warning btn-sm" onclick="openModal('modal-leave')">Leave</button>
+            </div>
+        </div>
     </div>
-    <hr style="border:0; border-top:1px solid #e2e8f0; margin:10px 0;">
-    <div class="flex">
-        <div>
-            <strong>Attendance: </strong><span id="att-status" class="tag pending">Not Checked In</span>
+
+    <!-- Calendar 7-Day Strip -->
+    <div class="calendar-strip" id="calendar-strip"></div>
+
+    <!-- Tab 1: Daily Tasks & Chores View -->
+    <div id="tab-view-today" class="view-content">
+        <!-- Laundry Automation Card -->
+        <div class="card laundry-card">
+            <div class="flex">
+                <div>
+                    <h3 style="font-size:15px; font-weight:700;">Laundry Cycle (బట్టల రొటీన్)</h3>
+                    <small style="opacity:0.8; font-size:12px;" id="laundry-current-desc">Ready for tonight's wash</small>
+                </div>
+                <button class="btn-secondary btn-sm" onclick="triggerNightWash()">+ Loaded Washer</button>
+            </div>
+            <div class="laundry-stepper">
+                <div class="laundry-step" id="step-wash">
+                    <div class="laundry-step-circle">1</div>
+                    <span>Night Wash</span>
+                </div>
+                <div class="laundry-step" id="step-dry">
+                    <div class="laundry-step-circle">2</div>
+                    <span>Drying</span>
+                </div>
+                <div class="laundry-step" id="step-fold">
+                    <div class="laundry-step-circle">3</div>
+                    <span>Folding</span>
+                </div>
+                <div class="laundry-step" id="step-reload">
+                    <div class="laundry-step-circle">4</div>
+                    <span>Reload Night</span>
+                </div>
+            </div>
         </div>
-        <div>
-            <button onclick="recordAttendance('in')">Punch In</button>
-            <button class="alt" onclick="recordAttendance('out')">Punch Out</button>
-            <button class="warning" onclick="recordLeave()">Mark Leave</button>
+
+        <!-- Chores Section -->
+        <div class="section-header">
+            <span class="section-title">Chores for Selected Day</span>
+            <button class="btn-secondary btn-sm" onclick="openAddChoreModal()">+ Add Chore</button>
         </div>
+        <div id="tasks-list"></div>
+
+        <!-- Meals Section Preview -->
+        <div class="section-header" style="margin-top:24px;">
+            <span class="section-title">Daily Meals & Recipes</span>
+            <button class="btn-secondary btn-sm" onclick="openMealModal()">Swap / Edit Meal</button>
+        </div>
+        <div id="meals-list"></div>
+    </div>
+
+    <!-- Tab 2: Full Week Calendar View -->
+    <div id="tab-view-week" class="view-content" style="display:none;">
+        <h2 style="font-size:18px; margin-bottom:12px;">This Week at a Glance</h2>
+        <div id="week-overview-container"></div>
+    </div>
+
+    <!-- Tab 3: Missed Reports & Attendance Audit -->
+    <div id="tab-view-reports" class="view-content" style="display:none;">
+        <h2 style="font-size:18px; margin-bottom:12px;">Missed Tasks & Attendance Report</h2>
+        <div class="card">
+            <h4 style="margin-bottom:8px;">Attendance History (IST)</h4>
+            <div id="attendance-history-list"></div>
+        </div>
+        <div class="card">
+            <h4 style="margin-bottom:8px; color:var(--danger);">Missed / Rescheduled Chores</h4>
+            <div id="missed-report-list"></div>
+        </div>
+    </div>
+
+    <!-- Bottom App Navigation Bar -->
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-today" onclick="switchTab('today')">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Daily
+        </button>
+        <button class="nav-item" id="nav-week" onclick="switchTab('week')">
+            <svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
+            Weekly
+        </button>
+        <button class="nav-item" id="nav-reports" onclick="switchTab('reports')">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+            Reports
+        </button>
     </div>
 </div>
 
-<!-- Laundry Automation Pipeline -->
-<div class="card" style="border-left: 4px solid var(--primary);">
-    <div class="flex">
-        <div>
-            <strong>Laundry Workflow</strong><br>
-            <small id="laundry-status-text">Status: Idle</small>
+<!-- ================= MODALS ================= -->
+
+<!-- Add / Edit Chore Modal -->
+<div class="modal-overlay" id="modal-task">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-task-title">Add Chore</h3>
+            <button class="icon-btn" onclick="closeModal('modal-task')">✕</button>
         </div>
-        <button onclick="startWasherNight()">Night Wash Loaded</button>
+        <div class="form-group">
+            <label class="form-label">Task in English</label>
+            <input type="text" id="task-input-en" placeholder="e.g., Clean Balcony">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Task in Telugu (తెలుగులో వివరణ)</label>
+            <input type="text" id="task-input-te" placeholder="e.g., బాల్కనీ శుభ్రం చేయాలి">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Schedule Date</label>
+            <input type="date" id="task-input-date">
+        </div>
+        <button class="btn-primary" style="width:100%; padding:12px;" onclick="saveChore()">Save Chore</button>
     </div>
 </div>
 
-<!-- Chores for Today -->
-<div class="card">
-    <div class="flex">
-        <h4 style="margin:0;">Today's Chores (రోజువారీ పనులు)</h4>
-        <button class="alt" onclick="addNewChorePrompt()">+ Add Custom Task</button>
+<!-- Missed Task Reason Modal -->
+<div class="modal-overlay" id="modal-missed">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <h3 class="modal-title">Task Not Completed</h3>
+            <button class="icon-btn" onclick="closeModal('modal-missed')">✕</button>
+        </div>
+        <input type="hidden" id="missed-task-id">
+        <div class="form-group">
+            <label class="form-label">Reason for not doing (చేయకపోవడానికి కారణం)</label>
+            <textarea id="missed-reason" rows="3" placeholder="e.g., Water supply cut off, busy, helper felt sick..."></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Reschedule to another day?</label>
+            <input type="date" id="missed-reschedule-date">
+        </div>
+        <button class="btn-danger" style="width:100%; padding:12px;" onclick="confirmMissedTask()">Save to Missed Log</button>
     </div>
-    <div id="tasks-container" class="grid" style="margin-top: 10px;"></div>
 </div>
 
-<!-- Meals & Recipes -->
-<div class="card">
-    <div class="flex">
-        <h4 style="margin:0;">Meals & Recipes (వంటల పట్టిక)</h4>
-        <button onclick="editMealPrompt()">Edit/Swap Meal</button>
+<!-- Meal Edit Modal with YouTube & Servings -->
+<div class="modal-overlay" id="modal-meal">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit / Swap Meal</h3>
+            <button class="icon-btn" onclick="closeModal('modal-meal')">✕</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Meal Type</label>
+            <select id="meal-select-type">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Dish Name (e.g., Paneer Butter Masala instead of Tomato Curry)</label>
+            <input type="text" id="meal-dish-name" placeholder="Dish name...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Number of People / Servings (Guests coming?)</label>
+            <input type="number" id="meal-servings" value="2" min="1">
+        </div>
+        <div class="form-group">
+            <label class="form-label">YouTube Recipe Video Link</label>
+            <input type="url" id="meal-yt-link" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <button class="btn-primary" style="width:100%; padding:12px;" onclick="saveMealPlan()">Update Meal</button>
     </div>
-    <div id="meals-container" class="grid" style="margin-top: 10px;"></div>
 </div>
 
-<!-- Missed Tasks Report -->
-<div class="card">
-    <div class="flex">
-        <h4 style="margin:0;">Missed / Incomplete Tasks Log</h4>
-        <button class="alt" onclick="renderReports()">Refresh</button>
+<!-- Leave / Holiday Modal -->
+<div class="modal-overlay" id="modal-leave">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <h3 class="modal-title">Mark Leave / Holiday</h3>
+            <button class="icon-btn" onclick="closeModal('modal-leave')">✕</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Type</label>
+            <select id="leave-type">
+                <option value="Holiday">Official Holiday (పండుగ / సెలవు)</option>
+                <option value="Sick Leave">Sick Leave (అనారోగ్యం)</option>
+                <option value="Personal Leave">Personal Leave (వ్యక్తిగత సెలవు)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Remarks / Note</label>
+            <input type="text" id="leave-note" placeholder="e.g., Sankranti festival">
+        </div>
+        <button class="btn-warning" style="width:100%; padding:12px;" onclick="confirmLeave()">Record Absence</button>
     </div>
-    <div id="report-container" class="grid" style="margin-top: 10px;"></div>
 </div>
 
 <script>
 // --- Indian Standard Time (IST) Helpers ---
-function getISTDateString() {
-    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // YYYY-MM-DD
-}
-function getISTTimeString() {
-    return new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' });
+function getISTDate() {
+    // Current IST date object
+    const istString = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    return new Date(istString);
 }
 
+function formatDateISO(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+let selectedDate = formatDateISO(getISTDate());
+
+// Live Clock in IST
 setInterval(() => {
-    document.getElementById('ist-clock').innerText = "IST: " + getISTTimeString();
+    const timeStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
+    document.getElementById('ist-time-pill').innerText = "IST " + timeStr;
 }, 1000);
 
-// --- Local Storage Data Initialization ---
-let appData = JSON.parse(localStorage.getItem('home_planner_data')) || {
-    attendance: {},
+// --- State & Local Storage Initialization ---
+let store = JSON.parse(localStorage.getItem('gruha_app_v2')) || {
     tasks: [],
     meals: {},
-    laundry: { stage: 'idle', lastUpdated: '' }
+    attendance: {},
+    laundryState: 'idle'
 };
 
-function saveData() {
-    localStorage.setItem('home_planner_data', JSON.stringify(appData));
+function saveStore() {
+    localStorage.setItem('gruha_app_v2', JSON.stringify(store));
 }
 
-// Generate Standard Daily & Weekly Schedules if empty
-function initializeSchedules() {
-    const today = getISTDateString();
-    const dayOfWeek = new Date().getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+// Generate weekly standard baseline
+function seedStandardSchedule() {
+    const now = getISTDate();
+    const currDay = now.getDay(); // 0: Sun, 1: Mon ...
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (currDay === 0 ? 6 : currDay - 1));
 
-    const standardTasks = [
-        { id: 1, title_en: "Sweep the house", title_te: "ఇల్లు ఊడ్చడం", recurring: "daily" },
-        { id: 2, title_en: "Mop the house", title_te: "ఇల్లు తుడవడం", recurring: "daily" }
-    ];
+    // For all 7 days of the current week
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const dStr = formatDateISO(d);
+        const dayIndex = d.getDay();
 
-    if (dayOfWeek === 1) { // Monday
-        standardTasks.push({ id: 3, title_en: "Dusting furniture & cobwebs", title_te: "బూజులు దులపడం మరియు దుమ్ము తుడవడం", recurring: "weekly" });
-    }
-    if (dayOfWeek === 6) { // Saturday
-        standardTasks.push({ id: 4, title_en: "Bathroom deep cleaning", title_te: "బాత్‌రూమ్ క్లీనింగ్", recurring: "weekly" });
-    }
+        // 1. Daily chores: Sweeping & Mopping
+        addChoreIfNotExists(dStr, "Sweep the entire house", "ఇల్లంతా ఊడ్చాలి", "daily");
+        addChoreIfNotExists(dStr, "Mop all floors", "ఇల్లంతా తడిగుడ్డతో తుడవాలి", "daily");
 
-    standardTasks.forEach(st => {
-        const exists = appData.tasks.find(t => t.date === today && t.title_en === st.title_en);
-        if (!exists) {
-            appData.tasks.push({
-                id: Date.now() + Math.random(),
-                date: today,
-                title_en: st.title_en,
-                title_te: st.title_te,
-                status: 'pending',
-                comment: ''
-            });
+        // 2. Weekly chores
+        if (dayIndex === 1) { // Monday
+            addChoreIfNotExists(dStr, "Dusting furniture & cobwebs", "బూజులు దులపడం, ఫర్నిచర్ దుమ్ము తుడవడం", "weekly");
         }
+        if (dayIndex === 6) { // Saturday
+            addChoreIfNotExists(dStr, "Bathroom deep cleaning", "బాత్‌రూమ్‌లు శుభ్రంగా కడగాలి", "weekly");
+        }
+
+        // 3. Default meals
+        if (!store.meals[dStr]) {
+            store.meals[dStr] = {
+                breakfast: { dish: "Idli & Sambar", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
+                lunch: { dish: "Tomato Curry & Rice", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
+                dinner: { dish: "Roti & Mixed Dal", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            };
+        }
+    }
+    saveStore();
+}
+
+function addChoreIfNotExists(dateStr, en, te, recurrence) {
+    const found = store.tasks.some(t => t.date === dateStr && t.title_en === en);
+    if (!found) {
+        store.tasks.push({
+            id: Date.now() + Math.random(),
+            date: dateStr,
+            title_en: en,
+            title_te: te,
+            recurrence: recurrence,
+            status: 'pending',
+            comment: ''
+        });
+    }
+}
+
+// --- Calendar Strip Component ---
+function renderCalendarStrip() {
+    const container = document.getElementById('calendar-strip');
+    container.innerHTML = '';
+    const now = getISTDate();
+    const currDay = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (currDay === 0 ? 6 : currDay - 1));
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const iso = formatDateISO(d);
+
+        const card = document.createElement('div');
+        card.className = `cal-day-card ${iso === selectedDate ? 'active' : ''}`;
+        card.onclick = () => {
+            selectedDate = iso;
+            renderCalendarStrip();
+            renderDailyView();
+        };
+
+        card.innerHTML = `
+            <div class="cal-day-name">${dayNames[d.getDay()]}</div>
+            <div class="cal-day-num">${d.getDate()}</div>
+            <div class="cal-dot"></div>
+        `;
+        container.appendChild(card);
+    }
+}
+
+// --- Daily Tasks & Meals Renderer ---
+function renderDailyView() {
+    // 1. Chores
+    const taskContainer = document.getElementById('tasks-list');
+    taskContainer.innerHTML = '';
+    const dayTasks = store.tasks.filter(t => t.date === selectedDate);
+
+    if (dayTasks.length === 0) {
+        taskContainer.innerHTML = '<p style="color:var(--slate-500); font-size:14px; text-align:center; padding:20px 0;">No chores for this date.</p>';
+    } else {
+        dayTasks.forEach(t => {
+            const el = document.createElement('div');
+            el.className = `task-item ${t.status === 'completed' ? 'completed' : ''}`;
+
+            let actionBtns = '';
+            if (t.isLaundry && t.laundryType === 'dry' && t.status === 'pending') {
+                actionBtns = `
+                    <button class="btn-warning btn-sm" onclick="laundryAction(${t.id}, 'not_dry')">Not Dry (ఆరలేదు)</button>
+                    <button class="btn-success btn-sm" onclick="laundryAction(${t.id}, 'dry_done')">Dry (ఆరాయి)</button>
+                `;
+            } else if (t.isLaundry && t.laundryType === 'fold' && t.status === 'pending') {
+                actionBtns = `
+                    <button class="btn-success btn-sm" onclick="laundryAction(${t.id}, 'fold_done')">Folded (మడిచాము)</button>
+                `;
+            } else if (t.status === 'pending') {
+                actionBtns = `
+                    <button class="btn-success btn-sm" onclick="completeTask(${t.id})">✓ Done</button>
+                    <button class="btn-danger btn-sm" onclick="openMissedModal(${t.id})">✗ Missed</button>
+                `;
+            } else if (t.status === 'completed') {
+                actionBtns = `<span class="tag" style="background:var(--success-light); color:var(--success); padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700;">DONE</span>`;
+            } else if (t.status === 'missed') {
+                actionBtns = `<span class="tag" style="background:var(--danger-light); color:var(--danger); padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700;">MISSED</span>`;
+            }
+
+            el.innerHTML = `
+                <div class="task-details">
+                    <div class="task-title">${t.title_en}</div>
+                    <div class="task-subtitle">${t.title_te}</div>
+                    ${t.comment ? `<div style="font-size:12px; color:var(--danger); margin-top:4px;">Reason: ${t.comment}</div>` : ''}
+                </div>
+                <div class="task-actions">
+                    <button class="icon-btn" onclick="speakBothLanguages('${encodeURIComponent(t.title_te)}', '${encodeURIComponent(t.title_en)}', this)" title="Speak in Telugu & English">🔊</button>
+                    ${actionBtns}
+                </div>
+            `;
+            taskContainer.appendChild(el);
+        });
+    }
+
+    // 2. Meals
+    const mealContainer = document.getElementById('meals-list');
+    mealContainer.innerHTML = '';
+    const dayMeals = store.meals[selectedDate] || {};
+
+    ['breakfast', 'lunch', 'dinner'].forEach(mType => {
+        const item = dayMeals[mType];
+        if (!item) return;
+
+        let embedHtml = '';
+        if (item.yt && item.yt.includes('v=')) {
+            const vidId = item.yt.split('v=')[1].split('&')[0];
+            embedHtml = `<div class="video-box"><iframe src="https://www.youtube.com/embed/${vidId}" allowfullscreen></iframe></div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'meal-card';
+        card.innerHTML = `
+            <div class="meal-header">
+                <span class="meal-type">${mType}</span>
+                <span class="servings-tag">Servings: ${item.servings} people</span>
+            </div>
+            <div class="meal-body">
+                <div class="dish-name">${item.dish}</div>
+                ${embedHtml}
+            </div>
+        `;
+        mealContainer.appendChild(card);
     });
 
-    // Default meals for today
-    if (!appData.meals[today]) {
-        appData.meals[today] = {
-            breakfast: { dish: "Idli & Sambar", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "Tomato Curry & Rice", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "Roti & Dal", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
-        };
-    }
-    saveData();
-}
-
-// --- Attendance Management ---
-function recordAttendance(type) {
-    const today = getISTDateString();
-    const time = getISTTimeString();
-    if (!appData.attendance[today]) appData.attendance[today] = {};
-
-    if (type === 'in') {
-        appData.attendance[today].punch_in = time;
-        appData.attendance[today].status = 'Present';
-    } else {
-        appData.attendance[today].punch_out = time;
-    }
-    saveData();
-    renderAttendance();
-}
-
-function recordLeave() {
-    const reason = prompt("Enter leave or holiday reason (సెలవు కారణం):");
-    if (!reason) return;
-    const today = getISTDateString();
-    appData.attendance[today] = { status: 'On Leave', reason: reason, time: getISTTimeString() };
-    saveData();
-    renderAttendance();
-}
-
-function renderAttendance() {
-    const today = getISTDateString();
-    const record = appData.attendance[today];
-    const badge = document.getElementById('att-status');
-    if (!record) {
-        badge.innerText = "Not Checked In";
-        badge.className = "tag pending";
-    } else if (record.status === 'On Leave') {
-        badge.innerText = `Leave (${record.reason})`;
-        badge.className = "tag missed";
-    } else {
-        badge.innerText = `Present (In: ${record.punch_in || '-'} | Out: ${record.punch_out || '-'})`;
-        badge.className = "tag completed";
-    }
-}
-
-// --- Bilingual Voice Synthesis (Telugu + English) ---
-function speakTask(teText, enText) {
-    if (!('speechSynthesis' in window)) {
-        alert("Speech synthesis is not supported on this browser.");
-        return;
-    }
-    window.speechSynthesis.cancel();
-
-    // 1. Speak English
-    const utterEn = new SpeechSynthesisUtterance(enText);
-    utterEn.lang = 'en-IN';
-
-    // 2. Speak Telugu sequentially
-    const utterTe = new SpeechSynthesisUtterance(teText);
-    utterTe.lang = 'te-IN';
-
-    utterEn.onend = () => window.speechSynthesis.speak(utterTe);
-    window.speechSynthesis.speak(utterEn);
+    renderAttendanceHeader();
+    updateLaundryUI();
 }
 
 // --- Laundry Workflow State Machine ---
-function startWasherNight() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+function triggerNightWash() {
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayStr = formatDateISO(nextDay);
 
-    appData.laundry = { stage: 'drying_pending', nextDate: tomorrowStr };
-    
-    // Add drying task for tomorrow
-    appData.tasks.push({
+    store.laundryState = 'drying';
+    store.tasks.push({
         id: Date.now(),
-        date: tomorrowStr,
-        title_en: "Dry washed clothes on clothesline",
-        title_te: "వాషింగ్ మెషీన్ బట్టలు ఆరవేయాలి",
+        date: nextDayStr,
+        title_en: "Dry clothes on clothesline",
+        title_te: "వాషింగ్ మెషీన్ బట్టలు ఎండలో ఆరవేయాలి",
         isLaundry: true,
         laundryType: 'dry',
         status: 'pending'
     });
-
-    alert("Clothes logged in washer! 'Dry clothes' task added for tomorrow.");
-    saveData();
-    renderTasks();
+    saveStore();
+    renderDailyView();
+    alert("Laundry logged! 'Dry clothes' task added for tomorrow (" + nextDayStr + ").");
 }
 
-function handleLaundryAction(taskId, action) {
-    const today = getISTDateString();
-    const tIndex = appData.tasks.findIndex(t => t.id === taskId);
-    if (tIndex === -1) return;
+function laundryAction(taskId, action) {
+    const t = store.tasks.find(x => x.id === taskId);
+    if (!t) return;
 
     if (action === 'not_dry') {
-        const nextDay = new Date();
+        const nextDay = new Date(t.date);
         nextDay.setDate(nextDay.getDate() + 1);
-        const nextDayStr = nextDay.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+        const nextDayStr = formatDateISO(nextDay);
 
-        appData.tasks[tIndex].status = 'rescheduled';
-        appData.tasks[tIndex].comment = 'Clothes not dry yet, carried over.';
+        t.status = 'missed';
+        t.comment = 'Not dry yet, carried over.';
 
-        appData.tasks.push({
+        store.tasks.push({
             id: Date.now(),
             date: nextDayStr,
             title_en: "Dry clothes (Carried over)",
-            title_te: "ఆరని బట్టలు మళ్ళీ ఎండలో ఆరవేయాలి",
+            title_te: "ఆరని బట్టలు మళ్ళీ ఆరవేయాలి",
             isLaundry: true,
             laundryType: 'dry',
             status: 'pending'
         });
-        alert("Carried over drying task to tomorrow.");
+        alert("Pushed drying task to " + nextDayStr);
     } else if (action === 'dry_done') {
-        appData.tasks[tIndex].status = 'completed';
+        t.status = 'completed';
+        store.laundryState = 'folding';
 
-        // Add folding for tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+        const nextDay = new Date(t.date);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextDayStr = formatDateISO(nextDay);
 
-        appData.tasks.push({
+        store.tasks.push({
             id: Date.now(),
-            date: tomorrowStr,
-            title_en: "Fold and store dried clothes",
-            title_te: "ఆరిన బట్టలు మడతపెట్టాలి",
+            date: nextDayStr,
+            title_en: "Fold and store clothes",
+            title_te: "ఆరిన బట్టలు మడతపెట్టి సర్దాలి",
             isLaundry: true,
             laundryType: 'fold',
             status: 'pending'
         });
-        alert("Drying complete! Added 'Fold clothes' task for tomorrow.");
-    } else if (action === 'folded_done') {
-        appData.tasks[tIndex].status = 'completed';
-        alert("Clothes folded! Reminder scheduled for tonight: Put dirty clothes in washing machine!");
-        
-        // Add evening reminder task for today
-        appData.tasks.push({
+        alert("Drying complete! Folding task scheduled for " + nextDayStr);
+    } else if (action === 'fold_done') {
+        t.status = 'completed';
+        store.laundryState = 'reload_night';
+
+        // Add tonight's washer reminder
+        store.tasks.push({
             id: Date.now(),
-            date: today,
-            title_en: "Night: Load washing machine for tomorrow",
-            title_te: "ఈ రాత్రికి వాషింగ్ మెషీన్‌లో బట్టలు వేయండి",
+            date: t.date,
+            title_en: "Night: Put clothes in washing machine",
+            title_te: "రాత్రికి వాషింగ్ మెషీన్‌లో బట్టలు వేయాలి",
             status: 'pending'
         });
+        alert("Clothes folded! Reminder created for tonight to load the washer.");
     }
-    saveData();
-    renderTasks();
+    saveStore();
+    renderDailyView();
 }
 
-// --- Render Tasks ---
-function renderTasks() {
-    const today = getISTDateString();
-    const container = document.getElementById('tasks-container');
-    container.innerHTML = '';
+function updateLaundryUI() {
+    const steps = ['wash', 'dry', 'fold', 'reload'];
+    steps.forEach(s => document.getElementById(`step-${s}`)?.classList.remove('active'));
 
-    const todayTasks = appData.tasks.filter(t => t.date === today);
+    const desc = document.getElementById('laundry-current-desc');
+    if (store.laundryState === 'drying') {
+        document.getElementById('step-dry')?.classList.add('active');
+        if (desc) desc.innerText = "Clothes are currently hanging to dry";
+    } else if (store.laundryState === 'folding') {
+        document.getElementById('step-fold')?.classList.add('active');
+        if (desc) desc.innerText = "Clothes are dry, ready for folding";
+    } else if (store.laundryState === 'reload_night') {
+        document.getElementById('step-reload')?.classList.add('active');
+        if (desc) desc.innerText = "Folded! Remember to reload washer tonight";
+    } else {
+        document.getElementById('step-wash')?.classList.add('active');
+        if (desc) desc.innerText = "Ready for tonight's wash";
+    }
+}
 
-    if (todayTasks.length === 0) {
-        container.innerHTML = '<p style="color:#64748b;">No chores scheduled for today.</p>';
+// --- Bilingual Voice Synthesis (Telugu + English) ---
+function speakBothLanguages(teEncoded, enEncoded, btnElement) {
+    if (!('speechSynthesis' in window)) {
+        alert("Voice synthesis is not supported on this browser.");
         return;
     }
+    const te = decodeURIComponent(teEncoded);
+    const en = decodeURIComponent(enEncoded);
 
-    todayTasks.forEach(t => {
-        const div = document.createElement('div');
-        div.className = 'flex';
-        div.style.padding = '8px 0';
-        div.style.borderBottom = '1px solid #f1f5f9';
+    window.speechSynthesis.cancel();
+    btnElement.classList.add('speaking');
 
-        let buttons = `
-            <button class="speaker-btn" onclick="speakTask('${t.title_te}', '${t.title_en}')" title="Listen in Telugu & English">🔊</button>
-            <button class="success" onclick="markDone(${t.id})">✓ Done</button>
-            <button class="danger" onclick="markMissed(${t.id})">✗ Missed</button>
-        `;
+    const utterEn = new SpeechSynthesisUtterance(en);
+    utterEn.lang = 'en-IN';
+    utterEn.rate = 0.9;
 
-        if (t.isLaundry && t.laundryType === 'dry' && t.status === 'pending') {
-            buttons = `
-                <button class="speaker-btn" onclick="speakTask('${t.title_te}', '${t.title_en}')">🔊</button>
-                <button class="warning" onclick="handleLaundryAction(${t.id}, 'not_dry')">Not Dry (ఆరలేదు)</button>
-                <button class="success" onclick="handleLaundryAction(${t.id}, 'dry_done')">Dry (ఆరాయి)</button>
-            `;
-        } else if (t.isLaundry && t.laundryType === 'fold' && t.status === 'pending') {
-            buttons = `
-                <button class="speaker-btn" onclick="speakTask('${t.title_te}', '${t.title_en}')">🔊</button>
-                <button class="success" onclick="handleLaundryAction(${t.id}, 'folded_done')">Folded (మడిచాము)</button>
-            `;
-        } else if (t.status === 'completed') {
-            buttons = `<span class="tag completed">Completed</span>`;
-        } else if (t.status === 'missed') {
-            buttons = `<span class="tag missed">Missed</span>`;
-        }
+    const utterTe = new SpeechSynthesisUtterance(te);
+    utterTe.lang = 'te-IN';
+    utterTe.rate = 0.85;
 
-        div.innerHTML = `
-            <div>
-                <strong>${t.title_en}</strong><br>
-                <small style="color:#64748b;">${t.title_te}</small>
-                ${t.comment ? `<br><small style="color:var(--danger);">Note: ${t.comment}</small>` : ''}
-            </div>
-            <div>${buttons}</div>
-        `;
-        container.appendChild(div);
-    });
+    utterEn.onend = () => window.speechSynthesis.speak(utterTe);
+    utterTe.onend = () => btnElement.classList.remove('speaking');
+    utterTe.onerror = () => btnElement.classList.remove('speaking');
+
+    window.speechSynthesis.speak(utterEn);
 }
 
-function markDone(id) {
-    const t = appData.tasks.find(x => x.id === id);
+// --- Attendance Handlers ---
+function quickPunch(type) {
+    const timeStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
+    if (!store.attendance[selectedDate]) store.attendance[selectedDate] = {};
+
+    if (type === 'in') {
+        store.attendance[selectedDate].in = timeStr;
+        store.attendance[selectedDate].status = 'Present';
+    } else {
+        store.attendance[selectedDate].out = timeStr;
+    }
+    saveStore();
+    renderAttendanceHeader();
+    alert(`Attendance ${type.toUpperCase()} recorded at ${timeStr} (IST)`);
+}
+
+function confirmLeave() {
+    const type = document.getElementById('leave-type').value;
+    const note = document.getElementById('leave-note').value;
+    store.attendance[selectedDate] = { status: 'Leave', type: type, note: note };
+    saveStore();
+    closeModal('modal-leave');
+    renderAttendanceHeader();
+    alert("Day marked as Leave/Holiday. Will not count as missed tasks.");
+}
+
+function renderAttendanceHeader() {
+    const badge = document.getElementById('att-badge');
+    const att = store.attendance[selectedDate];
+
+    if (!att) {
+        badge.innerHTML = `<span style="color:var(--slate-500)">Not Checked In</span>`;
+    } else if (att.status === 'Leave') {
+        badge.innerHTML = `<span style="color:var(--warning); font-weight:700;">Leave: ${att.type}</span>`;
+    } else {
+        badge.innerHTML = `<span style="color:var(--success); font-weight:700;">Present</span> <small>(In: ${att.in || '-'} | Out: ${att.out || '-'})</small>`;
+    }
+}
+
+// --- Task Completion & Missed Modals ---
+function completeTask(id) {
+    const t = store.tasks.find(x => x.id === id);
     if (t) t.status = 'completed';
-    saveData();
-    renderTasks();
+    saveStore();
+    renderDailyView();
 }
 
-function markMissed(id) {
-    const reason = prompt("Enter reason for task not done (చేయకపోవడానికి కారణం):");
-    if (!reason) return;
-    const reschedule = confirm("Do you want to reschedule this task for tomorrow?");
-    
-    const t = appData.tasks.find(x => x.id === id);
+function openMissedModal(id) {
+    document.getElementById('missed-task-id').value = id;
+    document.getElementById('missed-reason').value = '';
+    const tomorrow = new Date(selectedDate);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('missed-reschedule-date').value = formatDateISO(tomorrow);
+    openModal('modal-missed');
+}
+
+function confirmMissedTask() {
+    const id = parseFloat(document.getElementById('missed-task-id').value);
+    const reason = document.getElementById('missed-reason').value || 'No reason provided';
+    const rescheduleDate = document.getElementById('missed-reschedule-date').value;
+
+    const t = store.tasks.find(x => x.id === id);
     if (t) {
         t.status = 'missed';
         t.comment = reason;
 
-        if (reschedule) {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-
-            appData.tasks.push({
+        if (rescheduleDate) {
+            store.tasks.push({
                 id: Date.now(),
-                date: tomorrowStr,
+                date: rescheduleDate,
                 title_en: t.title_en + " (Rescheduled)",
                 title_te: t.title_te + " (మళ్ళీ కేటాయించబడింది)",
                 status: 'pending'
             });
         }
     }
-    saveData();
-    renderTasks();
+    saveStore();
+    closeModal('modal-missed');
+    renderDailyView();
     renderReports();
 }
 
-function addNewChorePrompt() {
-    const en = prompt("Enter task in English:");
-    if (!en) return;
-    const te = prompt("Enter task in Telugu (or translation):", en);
-    appData.tasks.push({
+// --- Modal Helper Functions ---
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function openAddChoreModal() {
+    document.getElementById('task-input-date').value = selectedDate;
+    document.getElementById('task-input-en').value = '';
+    document.getElementById('task-input-te').value = '';
+    openModal('modal-task');
+}
+
+function saveChore() {
+    const en = document.getElementById('task-input-en').value.trim();
+    const te = document.getElementById('task-input-te').value.trim();
+    const dt = document.getElementById('task-input-date').value;
+
+    if (!en) { alert("Please enter task in English"); return; }
+    store.tasks.push({
         id: Date.now(),
-        date: getISTDateString(),
+        date: dt,
         title_en: en,
         title_te: te || en,
         status: 'pending'
     });
-    saveData();
-    renderTasks();
+    saveStore();
+    closeModal('modal-task');
+    renderDailyView();
 }
 
-// --- Meals & Recipe Rendering ---
-function renderMeals() {
-    const today = getISTDateString();
-    const meals = appData.meals[today] || {};
-    const container = document.getElementById('meals-container');
+function openMealModal() {
+    const meals = store.meals[selectedDate] || {};
+    const type = document.getElementById('meal-select-type').value;
+    const current = meals[type] || { dish: '', servings: 2, yt: '' };
+
+    document.getElementById('meal-dish-name').value = current.dish;
+    document.getElementById('meal-servings').value = current.servings;
+    document.getElementById('meal-yt-link').value = current.yt || '';
+    openModal('modal-meal');
+}
+
+function saveMealPlan() {
+    const type = document.getElementById('meal-select-type').value;
+    const dish = document.getElementById('meal-dish-name').value.trim();
+    const servings = parseInt(document.getElementById('meal-servings').value) || 2;
+    const yt = document.getElementById('meal-yt-link').value.trim();
+
+    if (!store.meals[selectedDate]) store.meals[selectedDate] = {};
+    store.meals[selectedDate][type] = { dish, servings, yt };
+
+    saveStore();
+    closeModal('modal-meal');
+    renderDailyView();
+}
+
+// --- Weekly Calendar Overview Tab ---
+function renderWeekOverview() {
+    const container = document.getElementById('week-overview-container');
     container.innerHTML = '';
 
-    ['breakfast', 'lunch', 'dinner'].forEach(mealType => {
-        const item = meals[mealType];
-        if (!item) return;
+    const now = getISTDate();
+    const currDay = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (currDay === 0 ? 6 : currDay - 1));
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-        const ytId = item.yt && item.yt.includes('v=') ? item.yt.split('v=')[1].split('&')[0] : '';
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.style.background = '#f8fafc';
-        div.style.margin = '4px 0';
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const iso = formatDateISO(d);
+        const dayTasks = store.tasks.filter(t => t.date === iso);
+        const dayMeals = store.meals[iso] || {};
 
-        div.innerHTML = `
-            <div class="flex">
-                <strong style="text-transform: capitalize;">${mealType}: ${item.dish}</strong>
-                <span class="tag pending">Servings: ${item.servings} people</span>
+        const dayCard = document.createElement('div');
+        dayCard.className = 'card';
+        dayCard.style.cursor = 'pointer';
+        dayCard.onclick = () => {
+            selectedDate = iso;
+            renderCalendarStrip();
+            switchTab('today');
+        };
+
+        dayCard.innerHTML = `
+            <div class="flex" style="margin-bottom:8px;">
+                <strong>${dayNames[i]} (${iso})</strong>
+                <span class="tag" style="background:var(--primary-light); color:var(--primary); font-size:11px; padding:2px 8px; border-radius:6px; font-weight:700;">
+                    ${dayTasks.length} Chores
+                </span>
             </div>
-            ${ytId ? `<iframe class="yt-frame" src="https://www.youtube.com/embed/${ytId}"></iframe>` : ''}
+            <div style="font-size:13px; color:var(--slate-700); margin-bottom:4px;">
+                🍲 <strong>Lunch:</strong> ${dayMeals.lunch?.dish || 'Not planned'} (${dayMeals.lunch?.servings || 2} ppl)
+            </div>
+            <div style="font-size:12px; color:var(--slate-500);">
+                🧹 <strong>Key Tasks:</strong> ${dayTasks.slice(0, 2).map(t => t.title_en).join(', ') || 'No chores'}
+            </div>
         `;
-        container.appendChild(div);
-    });
+        container.appendChild(dayCard);
+    }
 }
 
-function editMealPrompt() {
-    const today = getISTDateString();
-    const type = prompt("Which meal to edit? (breakfast / lunch / dinner):", "lunch");
-    if (!type || !appData.meals[today][type]) return;
-
-    const current = appData.meals[today][type];
-    const newDish = prompt(`Current dish is '${current.dish}'. Enter new dish:`, current.dish);
-    const newServings = prompt(`Servings count (e.g. guests coming?):`, current.servings);
-    const newYt = prompt(`YouTube Recipe URL:`, current.yt);
-
-    appData.meals[today][type] = {
-        dish: newDish || current.dish,
-        servings: parseInt(newServings) || current.servings,
-        yt: newYt || current.yt
-    };
-    saveData();
-    renderMeals();
-}
-
-// --- Missed Tasks Report ---
+// --- Reports Tab ---
 function renderReports() {
-    const container = document.getElementById('report-container');
-    const missed = appData.tasks.filter(t => t.status === 'missed' || t.status === 'rescheduled');
-    
-    if (missed.length === 0) {
-        container.innerHTML = '<p style="color:#64748b;">No missed tasks recorded.</p>';
-        return;
+    // Attendance history
+    const attContainer = document.getElementById('attendance-history-list');
+    attContainer.innerHTML = '';
+    const attKeys = Object.keys(store.attendance).sort().reverse();
+
+    if (attKeys.length === 0) {
+        attContainer.innerHTML = '<small style="color:var(--slate-500)">No attendance records yet.</small>';
+    } else {
+        attKeys.slice(0, 7).forEach(dateStr => {
+            const row = store.attendance[dateStr];
+            const div = document.createElement('div');
+            div.style.padding = '6px 0';
+            div.style.borderBottom = '1px solid var(--slate-100)';
+            div.style.fontSize = '13px';
+            div.innerHTML = `<strong>${dateStr}</strong>: ${row.status} ${row.in ? `(Punch In: ${row.in}, Out: ${row.out || 'Pending'})` : ''} ${row.note ? `- ${row.note}` : ''}`;
+            attContainer.appendChild(div);
+        });
     }
 
-    container.innerHTML = missed.map(m => `
-        <div style="border-left: 3px solid var(--danger); padding: 6px 10px; background: #fff;">
-            <strong>${m.date} - ${m.title_en}</strong><br>
-            <small style="color:#64748b;">Reason: ${m.comment || 'None provided'}</small>
-        </div>
-    `).join('');
+    // Missed tasks
+    const missedContainer = document.getElementById('missed-report-list');
+    missedContainer.innerHTML = '';
+    const missed = store.tasks.filter(t => t.status === 'missed');
+
+    if (missed.length === 0) {
+        missedContainer.innerHTML = '<small style="color:var(--slate-500)">No missed tasks! Good job.</small>';
+    } else {
+        missed.forEach(m => {
+            const div = document.createElement('div');
+            div.style.padding = '8px 0';
+            div.style.borderBottom = '1px solid var(--slate-100)';
+            div.innerHTML = `
+                <div style="font-size:13px; font-weight:700; color:var(--danger);">${m.date}: ${m.title_en}</div>
+                <div style="font-size:12px; color:var(--slate-700);">Reason: ${m.comment}</div>
+            `;
+            missedContainer.appendChild(div);
+        });
+    }
 }
 
-function switchUser() {
-    const role = document.getElementById('user-role').value;
-    alert("Switched active profile to: " + role);
+// --- Tab Switcher ---
+function switchTab(tabId) {
+    document.getElementById('tab-view-today').style.display = tabId === 'today' ? 'block' : 'none';
+    document.getElementById('tab-view-week').style.display = tabId === 'week' ? 'block' : 'none';
+    document.getElementById('tab-view-reports').style.display = tabId === 'reports' ? 'block' : 'none';
+
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(`nav-${tabId}`)?.classList.add('active');
+
+    if (tabId === 'today') renderDailyView();
+    if (tabId === 'week') renderWeekOverview();
+    if (tabId === 'reports') renderReports();
 }
 
 // Initialization on load
 window.onload = function() {
-    initializeSchedules();
-    renderAttendance();
-    renderTasks();
-    renderMeals();
-    renderReports();
+    seedStandardSchedule();
+    renderCalendarStrip();
+    renderDailyView();
 };
 </script>
 </body>
