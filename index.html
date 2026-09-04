@@ -3,676 +3,552 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gruha | Smart House Chores & Kitchen</title>
+    <title>Gruha Homey | Smart Household & Kitchen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Telugu:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #3b82f6;
-            --primary-dark: #1d4ed8;
-            --primary-light: #eff6ff;
-            --success: #10b981;
-            --success-dark: #047857;
-            --success-light: #ecfdf5;
-            --danger: #ef4444;
-            --danger-light: #fef2f2;
-            --warning: #f59e0b;
-            --warning-light: #fffbeb;
-            --slate-900: #0f172a;
-            --slate-700: #334155;
-            --slate-500: #64748b;
-            --slate-200: #e2e8f0;
-            --slate-100: #f8fafc;
-            --surface: #ffffff;
-            --radius-xl: 20px;
-            --radius-lg: 14px;
-            --radius-md: 10px;
-            --shadow-card: 0 4px 18px -2px rgba(15, 23, 42, 0.07);
-            --shadow-float: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --homey-bg: #0e131f;
+            --homey-surface: #192032;
+            --homey-surface-light: #242d45;
+            --homey-accent: #2563eb;
+            --homey-success: #10b981;
+            --homey-danger: #ef4444;
+            --homey-warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --radius-card: 22px;
+            --radius-pill: 30px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f1f5f9; color: var(--slate-900); padding-bottom: 90px; }
+        body { background: var(--homey-bg); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; padding-bottom: 80px; }
 
         .app-shell {
             width: 100%;
-            max-width: 620px;
-            margin: 0 auto;
-            background: #ffffff;
+            max-width: 540px;
+            background: var(--homey-bg);
             min-height: 100vh;
-            box-shadow: 0 0 50px rgba(0,0,0,0.06);
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
-        /* Top Header */
-        .app-header {
-            padding: 18px 20px 14px 20px;
-            background: #ffffff;
-            border-bottom: 1px solid var(--slate-200);
+        /* Top Homey Header */
+        .homey-header {
+            padding: 18px 20px;
+            background: rgba(25, 32, 50, 0.75);
+            backdrop-filter: blur(14px);
             position: sticky;
             top: 0;
             z-index: 50;
-        }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .logo-box { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 40px; height: 40px; border-radius: 12px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-        .app-name { font-size: 19px; font-weight: 800; color: var(--slate-900); line-height: 1.1; }
-        .app-sub { font-size: 12px; color: var(--slate-500); font-weight: 500; }
-        
-        /* Role Toggle Switcher */
-        .role-switch {
-            background: var(--slate-100);
-            border-radius: 30px;
-            padding: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
-            gap: 2px;
-            border: 1px solid var(--slate-200);
+            justify-content: space-between;
+            align-items: center;
         }
-        .role-btn {
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
+        .homey-brand { display: flex; align-items: center; gap: 10px; }
+        .homey-logo-dot { width: 34px; height: 34px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
+        .homey-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+        .ist-badge { font-size: 11px; font-weight: 700; color: #60a5fa; background: rgba(59, 130, 246, 0.15); padding: 3px 8px; border-radius: 12px; margin-top: 2px; display: inline-block; }
+
+        /* Lock / Admin Button */
+        .admin-lock-btn {
+            background: var(--homey-surface-light);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main);
+            padding: 7px 12px;
+            border-radius: var(--radius-pill);
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            background: transparent;
-            color: var(--slate-500);
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .role-btn.active {
-            background: #ffffff;
-            color: var(--slate-900);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
+        .admin-lock-btn.unlocked { background: var(--homey-accent); border-color: var(--homey-accent); }
 
-        /* IST Banner */
-        .ist-pill {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--primary-dark);
-            background: var(--primary-light);
-            padding: 4px 10px;
-            border-radius: 16px;
-            display: inline-block;
-            margin-top: 8px;
+        /* Attendance Tile Banner */
+        .att-tile {
+            background: var(--homey-surface);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-card);
+            padding: 16px;
+            margin: 14px 16px 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
         }
-
-        /* Giant Attendance Action Bar (Accessible) */
-        .attendance-card {
-            background: #ffffff;
-            border: 2px solid var(--slate-200);
-            border-radius: var(--radius-lg);
-            padding: 14px;
-            margin: 14px 20px 0 20px;
-            box-shadow: var(--shadow-card);
-        }
-        .att-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .att-status-badge { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-        .punch-actions-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        
-        .punch-btn {
+        .att-top-row { display: flex; justify-content: space-between; align-items: center; }
+        .att-status-indicator { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .punch-grid { display: grid; grid-template-columns: 1.2fr 1fr 0.8fr; gap: 8px; }
+        .btn-punch {
             border: none;
-            outline: none;
-            padding: 12px 6px;
-            border-radius: 12px;
-            font-weight: 700;
+            padding: 12px 8px;
+            border-radius: 14px;
+            font-weight: 800;
             font-size: 13px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            transition: transform 0.1s;
+            gap: 3px;
+            color: #fff;
         }
-        .punch-btn:active { transform: scale(0.97); }
-        .punch-in { background: #dcfce7; color: #15803d; border: 2px solid #86efac; }
-        .punch-out { background: #fee2e2; color: #b91c1c; border: 2px solid #fca5a5; }
-        .punch-leave { background: #fef3c7; color: #b45309; border: 2px solid #fde68a; }
+        .btn-punch.in { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+        .btn-punch.out { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
+        .btn-punch.leave { background: var(--homey-surface-light); border: 1px solid rgba(255,255,255,0.1); color: var(--text-sub); }
+
+        /* Master Listen Audio Bar */
+        .master-audio-card {
+            margin: 12px 16px 0 16px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            border-radius: var(--radius-card);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+        }
+        .master-audio-title { font-size: 15px; font-weight: 800; }
+        .master-audio-sub { font-size: 12px; color: #bfdbfe; }
+        .master-play-circle { width: 44px; height: 44px; border-radius: 50%; background: #ffffff; color: var(--homey-accent); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; }
 
         /* Calendar Strip */
-        .cal-strip {
-            display: flex;
-            gap: 8px;
-            padding: 14px 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .cal-strip::-webkit-scrollbar { display: none; }
-        .cal-pill {
-            flex: 0 0 68px;
-            padding: 10px 4px;
-            border-radius: 16px;
+        .cal-scroll { display: flex; gap: 8px; padding: 14px 16px; overflow-x: auto; scrollbar-width: none; }
+        .cal-scroll::-webkit-scrollbar { display: none; }
+        .cal-bubble {
+            flex: 0 0 70px;
+            background: var(--homey-surface);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 10px 0;
             text-align: center;
-            background: #ffffff;
-            border: 2px solid var(--slate-200);
             cursor: pointer;
             transition: all 0.2s;
         }
-        .cal-pill.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #ffffff;
+        .cal-bubble.active {
+            background: var(--homey-accent);
+            border-color: var(--homey-accent);
+            box-shadow: 0 6px 18px rgba(37,99,235,0.4);
             transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.35);
         }
-        .cal-pill-day { font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .cal-pill-num { font-size: 18px; font-weight: 800; margin-top: 2px; }
+        .cal-bubble-day { font-size: 11px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; }
+        .cal-bubble.active .cal-bubble-day { color: #dbeafe; }
+        .cal-bubble-num { font-size: 18px; font-weight: 900; margin-top: 2px; }
 
-        /* Listen All Chores Master Button */
-        .voice-master-banner {
-            margin: 4px 20px 14px 20px;
-            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-            border-radius: var(--radius-lg);
-            padding: 14px 18px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);
+        /* Homey Image Card Widget */
+        .tasks-stream { padding: 0 16px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+        .homey-card {
+            background: var(--homey-surface);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            position: relative;
+            transition: transform 0.15s;
         }
-        .voice-master-title { font-size: 15px; font-weight: 700; }
-        .voice-master-sub { font-size: 12px; opacity: 0.9; }
-        .voice-circle-btn { width: 44px; height: 44px; border-radius: 50%; background: white; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .homey-card.completed { opacity: 0.55; filter: grayscale(0.6); }
 
-        /* Content Container */
-        .content-body { padding: 0 20px 20px 20px; flex: 1; }
-
-        /* Laundry Card with Visual Stepper */
-        .laundry-container {
-            background: #ffffff;
-            border: 2px solid #bfdbfe;
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-card);
+        /* Card Image Banner */
+        .card-photo-box {
+            width: 100%;
+            height: 150px;
+            position: relative;
+            background: #1e293b;
         }
-        .laundry-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .laundry-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .laundry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; margin-bottom: 12px; }
-        .laundry-step-box {
-            padding: 8px 4px;
+        .card-photo { width: 100%; height: 100%; object-fit: cover; }
+        .card-photo-gradient {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(25, 32, 50, 0.95) 100%);
+        }
+
+        /* Floating Badges on Photo */
+        .card-top-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(14, 19, 31, 0.75);
+            backdrop-filter: blur(6px);
+            padding: 4px 10px;
             border-radius: 12px;
-            background: var(--slate-100);
             font-size: 11px;
-            font-weight: 600;
-            color: var(--slate-500);
-            border: 2px solid transparent;
+            font-weight: 800;
+            color: #93c5fd;
+            border: 1px solid rgba(255,255,255,0.15);
         }
-        .laundry-step-box.active {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            border-color: var(--primary);
-            font-weight: 700;
+        .card-servings-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: 800;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 10px rgba(245,158,11,0.3);
         }
-        .step-icon { font-size: 22px; display: block; margin-bottom: 4px; }
 
-        /* Visual Chores Card */
-        .chore-card {
-            background: #ffffff;
-            border: 2px solid var(--slate-200);
-            border-radius: var(--radius-xl);
-            padding: 14px 16px;
-            margin-bottom: 12px;
+        /* Card Content Box */
+        .card-body-content { padding: 14px 16px; }
+        .card-title-te { font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.3; }
+        .card-title-en { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+
+        /* Action Controls */
+        .card-controls-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: var(--shadow-card);
-            transition: all 0.2s;
+            margin-top: 12px;
+            gap: 8px;
         }
-        .chore-card.completed {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-            opacity: 0.6;
-        }
-        .chore-card.completed .chore-title-te { text-decoration: line-through; }
-        .chore-left { display: flex; align-items: center; gap: 14px; flex: 1; }
-        .chore-icon-circle {
-            width: 52px;
-            height: 52px;
+        .action-voice-btn {
+            background: var(--homey-surface-light);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #60a5fa;
+            padding: 10px 16px;
             border-radius: 16px;
-            background: var(--primary-light);
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            flex-shrink: 0;
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            gap: 6px;
         }
-        .chore-texts { flex: 1; }
-        .chore-title-te { font-size: 16px; font-weight: 700; color: var(--slate-900); line-height: 1.3; }
-        .chore-title-en { font-size: 13px; color: var(--slate-500); font-weight: 500; }
-        
-        .chore-btns { display: flex; align-items: center; gap: 8px; }
-        .big-speaker-btn {
-            background: #f1f5f9;
+        .action-voice-btn:active { background: rgba(59, 130, 246, 0.3); }
+
+        .btn-done-big {
+            flex: 1;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
             border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            font-size: 20px;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 800;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
+            box-shadow: 0 4px 14px rgba(16,185,129,0.35);
         }
-        .big-speaker-btn:active { background: var(--primary-light); transform: scale(1.1); }
-        .action-check-btn {
-            background: #dcfce7;
-            color: #15803d;
-            border: 2px solid #86efac;
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            font-size: 20px;
+        .btn-miss-big {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 12px 14px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .btn-yt-red {
+            background: #e11d48;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 13px;
             font-weight: 800;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-        }
-        .action-miss-btn {
-            background: #fee2e2;
-            color: #b91c1c;
-            border: 2px solid #fca5a5;
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 6px;
         }
 
-        /* Food & Recipes Visual Cards */
-        .meal-visual-card {
-            background: #ffffff;
-            border: 2px solid var(--slate-200);
-            border-radius: var(--radius-xl);
+        /* Laundry Smart Bar */
+        .laundry-homey-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-card);
             padding: 16px;
             margin-bottom: 14px;
-            box-shadow: var(--shadow-card);
         }
-        .meal-badge-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .meal-type-pill { font-size: 12px; font-weight: 800; text-transform: uppercase; background: var(--slate-100); color: var(--slate-700); padding: 4px 10px; border-radius: 8px; }
-        .servings-badge { font-size: 13px; font-weight: 700; color: #92400e; background: #fef3c7; padding: 4px 10px; border-radius: 8px; }
-        .dish-title-lg { font-size: 18px; font-weight: 800; color: var(--slate-900); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        
-        .yt-recipe-banner {
-            background: #fff1f2;
-            border: 1px solid #fecdd3;
-            border-radius: 12px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        .yt-btn-text { font-size: 13px; font-weight: 700; color: #e11d48; display: flex; align-items: center; gap: 6px; }
 
-        /* Whole Week Admin Table (Notion Inspired) */
-        .admin-table-box {
-            border: 2px solid var(--slate-200);
-            border-radius: var(--radius-lg);
-            overflow-x: auto;
-            background: #ffffff;
-            margin-top: 14px;
-        }
-        .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .admin-table th { background: var(--slate-100); padding: 12px; border-bottom: 2px solid var(--slate-200); text-align: left; font-weight: 700; color: var(--slate-700); }
-        .admin-table td { padding: 12px; border-bottom: 1px solid var(--slate-200); vertical-align: top; }
-
-        /* Modals */
-        .modal-wrap {
+        /* Modals & Dialogs */
+        .modal-shade {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(8px);
             z-index: 100;
             display: none;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
+            padding: 16px;
         }
         .modal-box {
-            background: #ffffff;
+            background: var(--homey-surface);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
             width: 100%;
-            max-width: 620px;
-            border-radius: 28px 28px 0 0;
-            padding: 24px 20px 40px 20px;
-            animation: slideUp 0.25s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 480px;
+            padding: 22px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .modal-title { font-size: 18px; font-weight: 800; }
-        .field-group { margin-bottom: 14px; }
-        .field-label { font-size: 12px; font-weight: 700; color: var(--slate-500); margin-bottom: 6px; display: block; text-transform: uppercase; }
-        input, select, textarea {
+        .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
+        .input-dark {
             width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--slate-200);
-            border-radius: 12px;
+            background: var(--homey-surface-light);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            padding: 12px;
             font-size: 15px;
+            color: white;
+            margin-bottom: 12px;
             outline: none;
-            font-weight: 600;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        .input-dark:focus { border-color: var(--homey-accent); }
 
-        /* Floating Nav Bar */
-        .bottom-nav {
+        /* Admin Bottom Bar */
+        .admin-nav-bar {
             position: fixed;
-            bottom: 0;
-            left: 50%;
+            bottom: 0; left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 620px;
-            background: #ffffff;
-            border-top: 1px solid var(--slate-200);
+            max-width: 540px;
+            background: rgba(25, 32, 50, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0 16px 0;
+            padding: 10px 0 16px 0;
             z-index: 40;
         }
-        .nav-btn {
-            background: transparent;
+        .admin-nav-item {
+            background: none;
             border: none;
+            color: var(--text-sub);
+            font-size: 11px;
+            font-weight: 700;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--slate-500);
+            gap: 3px;
             cursor: pointer;
-            padding: 4px 14px;
         }
-        .nav-btn.active { color: var(--primary); }
-        .nav-icon { font-size: 20px; }
+        .admin-nav-item.active { color: #60a5fa; }
+
+        /* Admin Table */
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        .admin-table th { background: var(--homey-surface-light); padding: 10px; text-align: left; color: var(--text-sub); }
+        .admin-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); vertical-align: top; }
     </style>
 </head>
 <body>
 
 <div class="app-shell">
-    <!-- Top Bar -->
-    <header class="app-header">
-        <div class="header-top">
-            <div class="logo-box">
-                <div class="logo-icon">🏠</div>
-                <div>
-                    <h1 class="app-name">Gruha Workspace</h1>
-                    <div class="app-sub">ఇంటి పనులు & వంటల పట్టిక</div>
-                </div>
-            </div>
-            <div class="role-switch">
-                <button class="role-btn active" id="btn-mode-helper" onclick="setAppMode('helper')">🧹 Helper (సులభం)</button>
-                <button class="role-btn" id="btn-mode-admin" onclick="setAppMode('admin')">👑 Admin</button>
+    <!-- Top Header Bar -->
+    <header class="homey-header">
+        <div class="homey-brand">
+            <div class="homey-logo-dot">🏠</div>
+            <div>
+                <div class="homey-title">Gruha Home</div>
+                <div class="ist-badge" id="ist-clock">IST 00:00:00</div>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="ist-pill" id="ist-live-clock">IST 00:00:00</div>
-            <div style="font-size:12px; font-weight:700; color:var(--slate-700);" id="active-day-heading">Saturday</div>
-        </div>
+        <button class="admin-lock-btn" id="btn-admin-gate" onclick="toggleAdminSecurity()">
+            <span id="lock-icon">🔒</span>
+            <span id="lock-text">Admin Lock</span>
+        </button>
     </header>
 
-    <!-- Attendance Action Box (Large & Ultra Clear) -->
-    <div class="attendance-card">
-        <div class="att-header-row">
-            <span style="font-size:12px; font-weight:800; color:var(--slate-500); text-transform:uppercase;">హాజరు (Attendance)</span>
-            <div class="att-status-badge" id="att-badge-status">
-                <span style="color:#64748b;">Not Logged In</span>
+    <!-- Visual Attendance Card (Punch In / Out) -->
+    <div class="att-tile">
+        <div class="att-top-row">
+            <span style="font-size:12px; font-weight:800; color:var(--text-sub); text-transform:uppercase;">హాజరు (Attendance)</span>
+            <div class="att-status-indicator" id="att-badge">
+                <span>🔴 రాలేదు (Not Punched)</span>
             </div>
         </div>
-        <div class="punch-actions-grid">
-            <button class="punch-btn punch-in" onclick="recordPunch('in')">
+        <div class="punch-grid">
+            <button class="btn-punch in" onclick="punchAttendance('in')">
                 <span style="font-size:22px;">🟢</span>
                 <span>వచ్చాను (In)</span>
             </button>
-            <button class="punch-btn punch-out" onclick="recordPunch('out')">
+            <button class="btn-punch out" onclick="punchAttendance('out')">
                 <span style="font-size:22px;">🚪</span>
-                <span>వెళ్తున్నాను (Out)</span>
+                <span>వెళ్ళాను (Out)</span>
             </button>
-            <button class="punch-btn punch-leave" onclick="openLeaveModal()">
+            <button class="btn-punch leave" onclick="openLeaveDialog()">
                 <span style="font-size:22px;">🏖️</span>
                 <span>సెలవు (Leave)</span>
             </button>
         </div>
     </div>
 
-    <!-- Calendar Day Strip -->
-    <div class="cal-strip" id="calendar-pills"></div>
+    <!-- Calendar Day Selector -->
+    <div class="cal-scroll" id="cal-scroll-strip"></div>
 
-    <!-- Master Audio Bar: Read All Chores Out Loud -->
-    <div class="voice-master-banner" onclick="speakAllTodayTasks()">
+    <!-- Master Voice Broadcast: Tap to hear all tasks -->
+    <div class="master-audio-card" onclick="speakAllTasksAloud()">
         <div>
-            <div class="voice-master-title">🔊 పనులన్నీ వినండి (Play All Tasks)</div>
-            <div class="voice-master-sub">Tap here to listen to all today's tasks in Telugu</div>
+            <div class="master-audio-title">🔊 పనులన్నీ వినండి (Play Audio)</div>
+            <div class="master-audio-sub">ఈరోజు పనులన్నీ తెలుగులో వినడానికి నొక్కండి</div>
         </div>
-        <div class="voice-circle-btn">▶</div>
+        <div class="master-play-circle">▶</div>
     </div>
 
-    <!-- MAIN VIEWS -->
-    <div class="content-body">
+    <!-- ================= VIEW 1: MAID STREAM ================= -->
+    <div id="view-maid-stream" style="margin-top:14px;">
         
-        <!-- TAB 1: DAILY CHORES & MEALS -->
-        <div id="tab-daily-view">
-            <!-- Laundry Smart Stepper Card -->
-            <div class="laundry-container">
-                <div class="laundry-head">
-                    <div class="laundry-title">
-                        <span style="font-size:20px;">🧺</span>
-                        <span>బట్టల రొటీన్ (Laundry Cycle)</span>
+        <!-- Laundry Status Tile -->
+        <div style="padding:0 16px;">
+            <div class="laundry-homey-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong style="font-size:15px;">🧺 బట్టల రొటీన్ (Laundry)</strong>
+                        <div style="font-size:12px; color:#94a3b8; margin-top:2px;" id="laundry-desc">స్థితి: రాత్రి మెషీన్‌లో వేయాలి</div>
                     </div>
-                    <button class="punch-btn" style="padding:6px 12px; background:var(--primary); color:white;" onclick="triggerWasherTonight()">
+                    <button class="action-voice-btn" style="background:#2563eb; color:white;" onclick="triggerWasherTonight()">
                         + రాత్రి మెషీన్ వేశాము
                     </button>
                 </div>
-                <div class="laundry-grid">
-                    <div class="laundry-step-box" id="laundry-ui-wash">
-                        <span class="step-icon">🧺</span>
-                        <span>1. మెషీన్</span>
-                    </div>
-                    <div class="laundry-step-box" id="laundry-ui-dry">
-                        <span class="step-icon">☀️</span>
-                        <span>2. ఆరవేయాలి</span>
-                    </div>
-                    <div class="laundry-step-box" id="laundry-ui-fold">
-                        <span class="step-icon">👕</span>
-                        <span>3. మడతలు</span>
-                    </div>
-                    <div class="laundry-step-box" id="laundry-ui-night">
-                        <span class="step-icon">🌙</span>
-                        <span>4. రాత్రి అలర్ట్</span>
-                    </div>
-                </div>
-                <div style="font-size:12px; color:var(--slate-500); font-weight:600;" id="laundry-status-msg">
-                    స్థితి: రాత్రి వాషింగ్ మెషీన్‌లో వేయడానికి సిద్ధంగా ఉంది.
-                </div>
             </div>
-
-            <!-- Chores Section -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h2 style="font-size:16px; font-weight:800; color:var(--slate-900);">ఈరోజు పనులు (Today's Chores)</h2>
-                <button class="punch-btn" style="padding:6px 12px; background:var(--slate-100); color:var(--slate-700);" onclick="openAddChoreModal()">+ కొత్త పని (Add)</button>
-            </div>
-            
-            <div id="chores-container"></div>
-
-            <!-- Meals Section for Selected Day -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:24px 0 12px 0;">
-                <h2 style="font-size:16px; font-weight:800; color:var(--slate-900);">ఈరోజు వంటల పట్టిక (Food Menu)</h2>
-                <button class="punch-btn" style="padding:6px 12px; background:var(--slate-100); color:var(--slate-700);" onclick="openMealModal()">మార్చండి (Edit/Swap)</button>
-            </div>
-            <div id="meals-container"></div>
         </div>
 
-        <!-- TAB 2: WHOLE WEEK MEAL PLANNER (Admin Suite) -->
-        <div id="tab-meals-view" style="display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <div>
-                    <h2 style="font-size:17px; font-weight:800;">వారం మొత్తం వంటల పట్టిక</h2>
-                    <p style="font-size:12px; color:var(--slate-500);">Whole Week Breakfast, Lunch, Dinner & Recipes</p>
-                </div>
-                <button class="punch-btn" style="padding:8px 14px; background:var(--primary); color:white;" onclick="openMealModal()">+ Edit A Day</button>
+        <!-- Task & Cooking Cards Stream -->
+        <div class="tasks-stream" id="tasks-feed"></div>
+    </div>
+
+    <!-- ================= VIEW 2: ADMIN SUITE ================= -->
+    <div id="view-admin-panel" style="display:none; padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div>
+                <h2 style="font-size:18px; font-weight:800;">👑 Admin Management</h2>
+                <small style="color:var(--text-sub);">Configure whole week meals, headcounts & view audit logs.</small>
             </div>
-            <div class="admin-table-box">
+            <button class="admin-lock-btn" onclick="lockAdminBackToMaid()">🔒 Lock Back</button>
+        </div>
+
+        <!-- Admin Navigation Tabs -->
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <button class="action-voice-btn" id="btn-subtab-meals" onclick="switchAdminSubtab('meals')">🍲 Whole Week Meals</button>
+            <button class="action-voice-btn" id="btn-subtab-audit" onclick="switchAdminSubtab('audit')">📊 Audit & Missed Reports</button>
+        </div>
+
+        <!-- Whole Week Meal Matrix -->
+        <div id="admin-subtab-meals-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>Monday - Sunday Menu</strong>
+                <button class="action-voice-btn" style="background:var(--homey-accent); color:white;" onclick="openMealEditorModal()">+ Edit Day Menu</button>
+            </div>
+            <div style="background:var(--homey-surface); border-radius:18px; overflow-x:auto; border:1px solid rgba(255,255,255,0.08);">
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>వారం (Day)</th>
-                            <th>టిఫిన్ (Breakfast)</th>
-                            <th>మధ్యాహ్నం (Lunch)</th>
-                            <th>రాత్రి (Dinner)</th>
+                            <th>Day</th>
+                            <th>Breakfast</th>
+                            <th>Lunch</th>
+                            <th>Dinner</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-weekly-meals-body"></tbody>
+                    <tbody id="admin-meals-tbody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- TAB 3: AUDIT & MISSED TASKS -->
-        <div id="tab-audit-view" style="display:none;">
-            <h2 style="font-size:17px; font-weight:800; margin-bottom:12px;">రిపోర్ట్ & మిస్ అయిన పనులు (Missed Tasks)</h2>
-            <div class="chore-card" style="display:block;">
-                <h3 style="font-size:14px; font-weight:800; margin-bottom:8px; color:var(--danger);">చేయని పనుల వివరాలు (Missed Logs)</h3>
-                <div id="audit-missed-list"></div>
+        <!-- Audit Reports -->
+        <div id="admin-subtab-audit-box" style="display:none;">
+            <div style="background:var(--homey-surface); border-radius:18px; padding:16px; border:1px solid rgba(255,255,255,0.08); margin-bottom:12px;">
+                <h3 style="font-size:15px; font-weight:800; color:var(--homey-danger); margin-bottom:8px;">మిస్ అయిన పనులు (Missed Chores Log)</h3>
+                <div id="admin-missed-logs"></div>
             </div>
-            <div class="chore-card" style="display:block; margin-top:12px;">
-                <h3 style="font-size:14px; font-weight:800; margin-bottom:8px;">హాజరు వివరాలు (Attendance History)</h3>
-                <div id="audit-att-list"></div>
+            <div style="background:var(--homey-surface); border-radius:18px; padding:16px; border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="font-size:15px; font-weight:800; margin-bottom:8px;">హాజరు వివరాలు (Attendance Log)</h3>
+                <div id="admin-att-logs"></div>
             </div>
         </div>
-
     </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-btn active" id="nav-item-daily" onclick="switchNav('daily')">
-            <span class="nav-icon">📋</span>
-            <span>పనులు (Tasks)</span>
-        </button>
-        <button class="nav-btn" id="nav-item-meals" onclick="switchNav('meals')">
-            <span class="nav-icon">🍲</span>
-            <span>వంటలు (Weekly Meals)</span>
-        </button>
-        <button class="nav-btn" id="nav-item-audit" onclick="switchNav('audit')">
-            <span class="nav-icon">📊</span>
-            <span>రిపోర్ట్ (Reports)</span>
-        </button>
-    </nav>
 </div>
 
 <!-- ================= MODALS ================= -->
 
-<!-- Missed Task Modal (With Telugu reason prompts) -->
-<div class="modal-wrap" id="modal-missed-task">
+<!-- Admin Password Gate -->
+<div class="modal-shade" id="modal-admin-pin">
     <div class="modal-box">
-        <div class="modal-head">
-            <h3 class="modal-title">పని కాలేదు (Task Not Done)</h3>
-            <button class="punch-btn" style="padding:4px 10px;" onclick="closeModal('modal-missed-task')">✕</button>
+        <h3 class="modal-title">Admin Password Required</h3>
+        <p style="font-size:13px; color:var(--text-sub); margin-bottom:14px;">Enter your Admin PIN to configure meals and settings. (Default: 1234)</p>
+        <input type="password" id="admin-pin-input" class="input-dark" placeholder="Enter PIN (1234)..." maxlength="6">
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button class="action-voice-btn" onclick="closeModal('modal-admin-pin')">Cancel</button>
+            <button class="btn-done-big" style="flex:none; padding:10px 20px;" onclick="verifyAdminPIN()">Unlock Admin</button>
         </div>
-        <input type="hidden" id="missed-task-id-field">
-        <div class="field-group">
-            <label class="field-label">చేయకపోవడానికి కారణం (Reason)</label>
-            <select id="missed-reason-preset" onchange="if(this.value!=='custom') document.getElementById('missed-custom-text').value=this.value;">
-                <option value="సమయం చాలలేదు (Not enough time)">సమయం చాలలేదు (Not enough time)</option>
-                <option value="నీళ్లు రాలేదు (No water supply)">నీళ్లు రాలేదు (No water supply)</option>
-                <option value="అతిథులు వచ్చారు (Guests arrived)">అతిథులు వచ్చారు (Guests arrived)</option>
-                <option value="ఒంట్లో బాగోలేదు (Feeling unwell)">ఒంట్లో బాగోలేదు (Feeling unwell)</option>
-                <option value="custom">ఇతర కారణం (Other reason...)</option>
-            </select>
-        </div>
-        <div class="field-group">
-            <input type="text" id="missed-custom-text" placeholder="వివరణ రాయండి...">
-        </div>
-        <div class="field-group">
-            <label class="field-label">మరుసటి రోజుకి మార్చాలా? (Reschedule Date)</label>
-            <input type="date" id="missed-reschedule-field">
-        </div>
-        <button class="punch-btn" style="width:100%; background:var(--danger); color:white; padding:14px;" onclick="saveMissedTaskLog()">రిపోర్ట్ నమోదు చేయండి (Confirm)</button>
     </div>
 </div>
 
-<!-- Edit Meal & Servings Modal -->
-<div class="modal-wrap" id="modal-meal-editor">
+<!-- Missed Task Reason Dialog -->
+<div class="modal-shade" id="modal-missed-dialog">
     <div class="modal-box">
-        <div class="modal-head">
-            <h3 class="modal-title">వంట మార్చండి / హెడ్‌కౌంట్ (Edit Meal)</h3>
-            <button class="punch-btn" style="padding:4px 10px;" onclick="closeModal('modal-meal-editor')">✕</button>
-        </div>
-        <div class="field-group">
-            <label class="field-label">వారం (Day)</label>
-            <select id="meal-edit-day">
-                <option value="Monday">Monday (సోమవారం)</option>
-                <option value="Tuesday">Tuesday (మంగళవారం)</option>
-                <option value="Wednesday">Wednesday (బుధవారం)</option>
-                <option value="Thursday">Thursday (గురువారం)</option>
-                <option value="Friday">Friday (శుక్రవారం)</option>
-                <option value="Saturday">Saturday (శనివారం)</option>
-                <option value="Sunday">Sunday (ఆదివారం)</option>
-            </select>
-        </div>
-        <div class="field-group">
-            <label class="field-label">సమయం (Meal Type)</label>
-            <select id="meal-edit-type">
-                <option value="breakfast">ఉపాహారం (Breakfast)</option>
-                <option value="lunch">మధ్యాహ్న భోజనం (Lunch)</option>
-                <option value="dinner">రాత్రి భోజనం (Dinner)</option>
-            </select>
-        </div>
-        <div class="field-group">
-            <label class="field-label">వంటకం పేరు (Dish Name - e.g. Paneer Curry)</label>
-            <input type="text" id="meal-edit-dish" placeholder="e.g. పన్నీర్ కర్రీ / Paneer Butter Masala">
-        </div>
-        <div class="field-group">
-            <label class="field-label">ఎంత మందికి? (Guest Servings Count)</label>
-            <input type="number" id="meal-edit-servings" value="2" min="1">
-        </div>
-        <div class="field-group">
-            <label class="field-label">యూట్యూబ్ రెసిపీ లింక్ (YouTube Recipe URL)</label>
-            <input type="url" id="meal-edit-yt" placeholder="https://www.youtube.com/watch?v=...">
-        </div>
-        <button class="punch-btn" style="width:100%; background:var(--primary); color:white; padding:14px;" onclick="saveMealFromEditor()">సేవ్ చేయండి (Save Meal)</button>
+        <h3 class="modal-title">పని కాలేదు (Reason Not Done)</h3>
+        <input type="hidden" id="missed-task-id-holder">
+        <select id="missed-reason-select" class="input-dark">
+            <option value="సమయం చాలలేదు (Not enough time)">సమయం చాలలేదు (Not enough time)</option>
+            <option value="నీళ్లు రాలేదు (No water supply)">నీళ్లు రాలేదు (No water supply)</option>
+            <option value="అతిథులు వచ్చారు (Busy with guests)">అతిథులు వచ్చారు (Busy with guests)</option>
+            <option value="ఒంట్లో బాగోలేదు (Unwell)">ఒంట్లో బాగోలేదు (Unwell)</option>
+            <option value="ఇతర కారణం (Other reason)">ఇతర కారణం (Other reason...)</option>
+        </select>
+        <input type="text" id="missed-custom-note" class="input-dark" placeholder="ఇతర వివరణ (Optional note)...">
+        <label style="font-size:12px; color:var(--text-sub); display:block; margin-bottom:4px;">మరుసటి రోజుకి మార్చాలా? (Reschedule Date)</label>
+        <input type="date" id="missed-resched-date" class="input-dark">
+        <button class="btn-done-big" style="background:var(--homey-danger); width:100%;" onclick="confirmMissedTaskEntry()">సేవ్ చేయండి (Confirm Missed)</button>
     </div>
 </div>
 
-<!-- YouTube Video Modal -->
-<div class="modal-wrap" id="modal-yt-player">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h3 class="modal-title" id="yt-modal-title">రెసిపీ వీడియో (Recipe Video)</h3>
-            <button class="punch-btn" style="padding:4px 10px;" onclick="closeYtModal()">✕</button>
+<!-- YouTube Video Recipe Modal -->
+<div class="modal-shade" id="modal-yt-player">
+    <div class="modal-box" style="max-width:540px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <strong id="yt-dish-title">వంట రెసిపీ వీడియో</strong>
+            <button class="action-voice-btn" style="padding:4px 10px;" onclick="closeYtPlayer()">✕</button>
         </div>
-        <div style="width:100%; height:260px; border-radius:14px; overflow:hidden;" id="yt-iframe-container"></div>
+        <div style="width:100%; height:280px; border-radius:16px; overflow:hidden;" id="yt-iframe-slot"></div>
     </div>
 </div>
 
-<!-- Leave / Holiday Modal -->
-<div class="modal-wrap" id="modal-leave-box">
+<!-- Meal Editor Modal -->
+<div class="modal-shade" id="modal-meal-editor">
     <div class="modal-box">
-        <div class="modal-head">
-            <h3 class="modal-title">సెలవు నమోదు (Mark Leave / Holiday)</h3>
-            <button class="punch-btn" style="padding:4px 10px;" onclick="closeModal('modal-leave-box')">✕</button>
-        </div>
-        <div class="field-group">
-            <label class="field-label">రకం (Leave Type)</label>
-            <select id="leave-type-choice">
-                <option value="పండుగ సెలవు (Festival Holiday)">పండుగ సెలవు (Festival Holiday)</option>
-                <option value="అనారోగ్య సెలవు (Sick Leave)">అనారోగ్య సెలవు (Sick Leave)</option>
-                <option value="వ్యక్తిగత పని (Personal Work)">వ్యక్తిగత పని (Personal Work)</option>
-            </select>
-        </div>
-        <div class="field-group">
-            <label class="field-label">వివరణ (Notes)</label>
-            <input type="text" id="leave-notes-text" placeholder="కారణం రాయండి...">
-        </div>
-        <button class="punch-btn" style="width:100%; background:var(--warning); color:white; padding:14px;" onclick="saveLeaveRecord()">సెలవుగా నమోదు చేయండి</button>
+        <h3 class="modal-title">Edit Meal & Headcount</h3>
+        <select id="edit-meal-day" class="input-dark">
+            <option value="Monday">Monday (సోమవారం)</option>
+            <option value="Tuesday">Tuesday (మంగళవారం)</option>
+            <option value="Wednesday">Wednesday (బుధవారం)</option>
+            <option value="Thursday">Thursday (గురువారం)</option>
+            <option value="Friday">Friday (శుక్రవారం)</option>
+            <option value="Saturday">Saturday (శనివారం)</option>
+            <option value="Sunday">Sunday (ఆదివారం)</option>
+        </select>
+        <select id="edit-meal-type" class="input-dark">
+            <option value="breakfast">ఉపాహారం (Breakfast)</option>
+            <option value="lunch">మధ్యాహ్నం (Lunch)</option>
+            <option value="dinner">రాత్రి (Dinner)</option>
+        </select>
+        <input type="text" id="edit-meal-dish" class="input-dark" placeholder="Dish name (e.g. పన్నీర్ కర్రీ / Paneer Curry)">
+        <label style="font-size:12px; color:var(--text-sub); display:block; margin-bottom:4px;">Guest / People Headcount (ఎంత మందికి?)</label>
+        <input type="number" id="edit-meal-servings" class="input-dark" value="2" min="1">
+        <input type="url" id="edit-meal-yt" class="input-dark" placeholder="YouTube Recipe URL...">
+        <button class="btn-done-big" style="width:100%;" onclick="saveMealFromAdminEditor()">Save to Weekly Schedule</button>
+    </div>
+</div>
+
+<!-- Leave Modal -->
+<div class="modal-shade" id="modal-leave-dialog">
+    <div class="modal-box">
+        <h3 class="modal-title">సెలవు నమోదు (Mark Leave)</h3>
+        <select id="leave-category" class="input-dark">
+            <option value="పండుగ సెలవు (Festival Holiday)">పండుగ సెలవు (Festival Holiday)</option>
+            <option value="అనారోగ్యం (Sick Leave)">అనారోగ్యం (Sick Leave)</option>
+            <option value="సొంత పని (Personal Leave)">సొంత పని (Personal Leave)</option>
+        </select>
+        <input type="text" id="leave-note-input" class="input-dark" placeholder="వివరణ (Notes)...">
+        <button class="btn-done-big" style="background:var(--homey-warning); color:black; width:100%;" onclick="saveLeaveEntry()">సెలవుగా నమోదు చేయండి</button>
     </div>
 </div>
 
@@ -693,64 +569,79 @@ const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 const dayNamesTe = ['ఆదివారం', 'సోమవారం', 'మంగళవారం', 'బుధవారం', 'గురువారం', 'శుక్రవారం', 'శనివారం'];
 
 let activeDate = formatDateISO(getISTDate());
-let appMode = 'helper'; // 'helper' or 'admin'
+let isAdminUnlocked = false;
+const ADMIN_PASS = "1234"; // Default Owner PIN
 
 // Live Clock
 setInterval(() => {
-    const timeStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
-    document.getElementById('ist-live-clock').innerText = "IST " + timeStr;
+    const t = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
+    document.getElementById('ist-clock').innerText = "IST " + t;
 }, 1000);
 
-// --- Local Database & Preset ---
-let state = JSON.parse(localStorage.getItem('gruha_accessible_v4')) || {
+// High-Resolution Image Library for Illiterate Comprehension
+const IMAGES = {
+    sweep: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80",
+    mop: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=600&q=80",
+    bathroom: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80",
+    dust: "https://images.unsplash.com/photo-1581578731117-104f2a863ecc?auto=format&fit=crop&w=600&q=80",
+    washer: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=600&q=80",
+    drying: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=600&q=80",
+    folding: "https://images.unsplash.com/photo-1489274495757-95c7c837b371?auto=format&fit=crop&w=600&q=80",
+    breakfast: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
+    lunch: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80",
+    dinner: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"
+};
+
+// Database Initialization
+let store = JSON.parse(localStorage.getItem('gruha_homey_v5')) || {
     tasks: [],
     meals: {
         "Monday": {
-            breakfast: { dish: "ఇడ్లీ & సాంబార్ (Idli & Sambar)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "టమాటో కర్రీ & అన్నం (Tomato Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "రొట్టె & పప్పు (Roti & Dal)", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "ఇడ్లీ & సాంబార్ (Idli)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "టమాటో పప్పు & అన్నం (Tomato Dal)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "రొట్టె & కూర (Roti & Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         },
         "Tuesday": {
-            breakfast: { dish: "ఉప్మా (Upma)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "బెండకాయ పులుసు (Bhendi Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "పుల్కా & వెజ్ కూర (Veg Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "ఉప్మా (Upma)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "బెండకాయ పులుసు (Bhendi Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "పుల్కా & వెజ్ కూర (Veg Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         },
         "Wednesday": {
-            breakfast: { dish: "దోశ (Dosa & Chutney)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "పప్పుచారు & ఆలూ ఫ్రై (Potato Fry)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "జీరా రైస్ & పన్నీర్ కర్రీ (Paneer Curry)", servings: 4, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "దోశ (Dosa & Chutney)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "పప్పుచారు & ఆలూ ఫ్రై (Potato Fry)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "జీరా రైస్ & పన్నీర్ కర్రీ (Paneer Curry)", servings: 4, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         },
         "Thursday": {
-            breakfast: { dish: "అటుకులు / పోహా (Poha)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "బీరకాయ కర్రీ (Ridge Gourd Curry)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "చపాతీ & ఎగ్/పన్నీర్ భుర్జీ", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "అటుకులు / పోహా (Poha)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "బీరకాయ కర్రీ (Ridge Gourd)", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "చపాతీ & ఎగ్/పన్నీర్ భుర్జీ", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         },
         "Friday": {
-            breakfast: { dish: "పెసరట్టు (Pesarattu)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "గుత్తి వంకాయ (Gutti Vankaya)", servings: 4, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "రొట్టె & పాలకూర పప్పు", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "పెసరట్టు (Pesarattu)", servings: 2, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "గుత్తి వంకాయ (Gutti Vankaya)", servings: 4, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "రొట్టె & పాలకూర పప్పు", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         },
         "Saturday": {
-            breakfast: { dish: "పూరి & ఆలూ కుర్మా (Poori & Aloo)", servings: 3, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "టమాటో పప్పు & మజ్జిగ పులుసు", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "వెజ్ పులావ్ & రైతా (Veg Pulao)", servings: 3, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "పూరి & ఆలూ కుర్మా (Poori Aloo)", servings: 3, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "టమాటో పప్పు & చారు", servings: 2, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "వెజ్ పులావ్ & రైతా", servings: 3, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         },
         "Sunday": {
-            breakfast: { dish: "గారెలు / వడ (Vada & Sambar)", servings: 4, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE" },
-            lunch: { dish: "స్పెషల్ బిర్యానీ (Special Biryani)", servings: 5, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM" },
-            dinner: { dish: "లైట్ కిచిడీ & పెరుగు (Khichdi)", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g" }
+            breakfast: { dish: "గారెలు / వడ (Vada Sambar)", servings: 4, yt: "https://www.youtube.com/watch?v=s4xnyTR_oCE", img: IMAGES.breakfast },
+            lunch: { dish: "స్పెషల్ బిర్యానీ (Special Biryani)", servings: 5, yt: "https://www.youtube.com/watch?v=FjC3eZq86oM", img: IMAGES.lunch },
+            dinner: { dish: "లైట్ కిచిడీ & పెరుగు", servings: 2, yt: "https://www.youtube.com/watch?v=5Vz1y48Dk6g", img: IMAGES.dinner }
         }
     },
     attendance: {},
     laundry: { stage: 'wash' }
 };
 
-function saveState() {
-    localStorage.setItem('gruha_accessible_v4', JSON.stringify(state));
+function saveStore() {
+    localStorage.setItem('gruha_homey_v5', JSON.stringify(store));
 }
 
-// Generate Chores for the week
-function generateDefaultWeek() {
+// Generate Standard Chores
+function generateWeeklyStandardTasks() {
     const today = getISTDate();
     const currDay = today.getDay();
     const monday = new Date(today);
@@ -762,29 +653,29 @@ function generateDefaultWeek() {
         const iso = formatDateISO(d);
         const dIdx = d.getDay();
 
-        // 1. Daily Chores with Visual Icons
-        addChoreDefault(iso, "ఇల్లంతా ఊడ్చాలి", "Sweep the house thoroughly", "🧹", "daily");
-        addChoreDefault(iso, "ఇల్లంతా తడిగుడ్డతో తుడవాలి", "Mop all floors with disinfectant", "🪣", "daily");
+        // Daily Chores with Real Photos
+        ensureChore(iso, "ఇల్లంతా ఊడ్చాలి", "Sweep the house thoroughly", IMAGES.sweep, "daily");
+        ensureChore(iso, "ఇల్లంతా తడిగుడ్డతో తుడవాలి", "Mop all floors with disinfectant", IMAGES.mop, "daily");
 
-        // 2. Weekly Chores
+        // Weekly Chores
         if (dIdx === 1) { // Monday Dusting
-            addChoreDefault(iso, "బూజులు దులపడం, ఫర్నిచర్ దుమ్ము తుడవడం", "Dust furniture & cobwebs", "🪶", "weekly");
+            ensureChore(iso, "బూజులు దులపడం, ఫర్నిచర్ దుమ్ము తుడవడం", "Dusting furniture & cobwebs", IMAGES.dust, "weekly");
         }
-        if (dIdx === 6) { // Saturday Bathroom Cleaning
-            addChoreDefault(iso, "బాత్‌రూమ్‌లు క్లీన్ చేయడం", "Bathroom deep cleaning & scrub", "🚿", "weekly");
+        if (dIdx === 6) { // Saturday Bathroom Deep Cleaning
+            ensureChore(iso, "బాత్‌రూమ్‌లు శుభ్రంగా కడగాలి", "Bathroom deep scrub & cleaning", IMAGES.bathroom, "weekly");
         }
     }
-    saveState();
+    saveStore();
 }
 
-function addChoreDefault(iso, te, en, icon, rec) {
-    if (!state.tasks.some(t => t.date === iso && t.title_te === te)) {
-        state.tasks.push({
+function ensureChore(iso, te, en, img, rec) {
+    if (!store.tasks.some(t => t.date === iso && t.title_te === te)) {
+        store.tasks.push({
             id: Date.now() + Math.random(),
             date: iso,
             title_te: te,
             title_en: en,
-            icon: icon,
+            image: img,
             status: 'pending',
             comment: ''
         });
@@ -793,8 +684,8 @@ function addChoreDefault(iso, te, en, icon, rec) {
 
 // --- Calendar Strip ---
 function renderCalendarStrip() {
-    const box = document.getElementById('calendar-pills');
-    box.innerHTML = '';
+    const strip = document.getElementById('cal-scroll-strip');
+    strip.innerHTML = '';
     const now = getISTDate();
     const currDay = now.getDay();
     const monday = new Date(now);
@@ -805,140 +696,163 @@ function renderCalendarStrip() {
         d.setDate(monday.getDate() + i);
         const iso = formatDateISO(d);
 
-        const pill = document.createElement('div');
-        pill.className = `cal-pill ${iso === activeDate ? 'active' : ''}`;
-        pill.onclick = () => {
+        const bub = document.createElement('div');
+        bub.className = `cal-bubble ${iso === activeDate ? 'active' : ''}`;
+        bub.onclick = () => {
             activeDate = iso;
             renderCalendarStrip();
-            renderDailyContent();
+            renderMaidStream();
         };
 
-        pill.innerHTML = `
-            <div class="cal-pill-day">${dayNames[d.getDay()].slice(0,3)}</div>
-            <div class="cal-pill-num">${d.getDate()}</div>
+        bub.innerHTML = `
+            <div class="cal-bubble-day">${dayNames[d.getDay()].slice(0,3)}</div>
+            <div class="cal-bubble-num">${d.getDate()}</div>
         `;
-        box.appendChild(pill);
+        strip.appendChild(bub);
     }
 }
 
-// --- Render Daily Chores & Meals ---
-function renderDailyContent() {
+// --- MAID STREAM RENDERER (Chores + 3 Meals Integrated with Photos) ---
+function renderMaidStream() {
+    const feed = document.getElementById('tasks-feed');
+    feed.innerHTML = '';
+
     const dObj = new Date(activeDate + "T00:00:00");
     const dIdx = dObj.getDay();
-    document.getElementById('active-day-heading').innerText = `${dayNamesTe[dIdx]} (${dayNames[dIdx]}) - ${activeDate}`;
-
-    // 1. Chores
-    const choresBox = document.getElementById('chores-container');
-    choresBox.innerHTML = '';
-    const dayTasks = state.tasks.filter(t => t.date === activeDate);
-
-    if (dayTasks.length === 0) {
-        choresBox.innerHTML = `<div style="text-align:center; padding:20px; color:var(--slate-500); font-weight:700;">ఈరోజు పనులేవీ లేవు! (No Chores)</div>`;
-    } else {
-        dayTasks.forEach(t => {
-            const card = document.createElement('div');
-            card.className = `chore-card ${t.status === 'completed' ? 'completed' : ''}`;
-
-            let actionsHtml = '';
-            if (t.isLaundry && t.laundryType === 'dry' && t.status === 'pending') {
-                actionsHtml = `
-                    <button class="punch-btn" style="background:#fef3c7; color:#b45309; padding:8px 10px;" onclick="laundryFlow(${t.id}, 'not_dry')">💧 ఆరలేదు</button>
-                    <button class="punch-btn" style="background:#dcfce7; color:#15803d; padding:8px 10px;" onclick="laundryFlow(${t.id}, 'dry_done')">☀️ ఆరాయి</button>
-                `;
-            } else if (t.isLaundry && t.laundryType === 'fold' && t.status === 'pending') {
-                actionsHtml = `
-                    <button class="punch-btn" style="background:#dcfce7; color:#15803d; padding:8px 12px;" onclick="laundryFlow(${t.id}, 'fold_done')">👕 మడిచాము</button>
-                `;
-            } else if (t.status === 'pending') {
-                actionsHtml = `
-                    <button class="action-check-btn" onclick="markTaskDone(${t.id})" title="అయ్యింది (Done)">✓</button>
-                    <button class="action-miss-btn" onclick="openMissedDialog(${t.id})" title="కాలేదు (Missed)">✗</button>
-                `;
-            } else if (t.status === 'completed') {
-                actionsHtml = `<span style="font-weight:800; color:var(--success); font-size:14px;">✓ పూర్తి</span>`;
-            } else if (t.status === 'missed') {
-                actionsHtml = `<span style="font-weight:800; color:var(--danger); font-size:14px;">✗ కాలేదు</span>`;
-            }
-
-            card.innerHTML = `
-                <div class="chore-left">
-                    <div class="chore-icon-circle">${t.icon || '🧹'}</div>
-                    <div class="chore-texts">
-                        <div class="chore-title-te">${t.title_te}</div>
-                        <div class="chore-title-en">${t.title_en}</div>
-                        ${t.comment ? `<div style="font-size:11px; color:var(--danger); font-weight:700; margin-top:2px;">కారణం: ${t.comment}</div>` : ''}
-                    </div>
-                </div>
-                <div class="chore-btns">
-                    <button class="big-speaker-btn" onclick="speakChoreVoice('${encodeURIComponent(t.title_te)}', '${encodeURIComponent(t.title_en)}')" title="వినండి">🔊</button>
-                    ${actionsHtml}
-                </div>
-            `;
-            choresBox.appendChild(card);
-        });
-    }
-
-    // 2. Meals
-    const mealBox = document.getElementById('meals-container');
-    mealBox.innerHTML = '';
     const dayName = dayNames[dIdx];
-    const todayMeals = state.meals[dayName] || {};
+    const todayMeals = store.meals[dayName] || {};
 
-    const mealIcons = { breakfast: '🥞 ఉపాహారం (Breakfast)', lunch: '🍛 మధ్యాహ్న భోజనం (Lunch)', dinner: '🍲 రాత్రి భోజనం (Dinner)' };
+    // 1. Injected Cooking Tasks for the Maid (Breakfast, Lunch, Dinner)
+    const mealKeys = [
+        { key: 'breakfast', titleTe: 'ఉదయం టిఫిన్ చేయాలి', titleEn: 'Cook Breakfast', tag: '🥞 టిఫిన్ (Breakfast)', defImg: IMAGES.breakfast },
+        { key: 'lunch', titleTe: 'మధ్యాహ్న భోజనం వండాలి', titleEn: 'Cook Lunch', tag: '🍛 మధ్యాహ్నం (Lunch)', defImg: IMAGES.lunch },
+        { key: 'dinner', titleTe: 'రాత్రి భోజనం వండాలి', titleEn: 'Cook Dinner', tag: '🍲 రాత్రి (Dinner)', defImg: IMAGES.dinner }
+    ];
 
-    ['breakfast', 'lunch', 'dinner'].forEach(type => {
-        const m = todayMeals[type] || { dish: 'వంటకం నిర్ణయించలేదు', servings: 2, yt: '' };
+    mealKeys.forEach(mk => {
+        const m = todayMeals[mk.key];
+        if (!m) return;
+
+        const isCompleted = store.tasks.some(t => t.date === activeDate && t.title_te === mk.titleTe && t.status === 'completed');
+
         const card = document.createElement('div');
-        card.className = 'meal-visual-card';
+        card.className = `homey-card ${isCompleted ? 'completed' : ''}`;
 
-        let ytSection = '';
+        const speechTelugu = `${mk.titleTe}: ${m.dish}. ${m.servings} మంది మనుషులకు.`;
+        const speechEnglish = `${mk.titleEn}: ${m.dish} for ${m.servings} people.`;
+
+        let ytBtn = '';
         if (m.yt) {
-            ytSection = `
-                <div class="yt-recipe-banner" onclick="showRecipeVideo('${m.dish}', '${m.yt}')">
-                    <div class="yt-btn-text">
-                        <span style="font-size:18px;">▶</span>
-                        <span>రెసిపీ వీడియో చూడండి (Watch Recipe)</span>
-                    </div>
-                    <span style="color:#e11d48; font-weight:800; font-size:12px;">YouTube ↗</span>
-                </div>
-            `;
+            ytBtn = `<button class="btn-yt-red" onclick="playRecipeYt('${m.dish}', '${m.yt}')">▶ రెసిపీ వీడియో</button>`;
         }
 
         card.innerHTML = `
-            <div class="meal-badge-row">
-                <span class="meal-type-pill">${mealIcons[type]}</span>
-                <span class="servings-badge">👥 ${m.servings} మందికి (People)</span>
+            <div class="card-photo-box" onclick="speakAudioVoice('${encodeURIComponent(speechTelugu)}', '${encodeURIComponent(speechEnglish)}')">
+                <img src="${m.img || mk.defImg}" class="card-photo" alt="Dish">
+                <div class="card-photo-gradient"></div>
+                <div class="card-top-tag">${mk.tag}</div>
+                <div class="card-servings-badge">👥 ${m.servings} మందికి</div>
             </div>
-            <div class="dish-title-lg">
-                <span>🍽️</span>
-                <span>${m.dish}</span>
+            <div class="card-body-content">
+                <div class="card-title-te">${m.dish}</div>
+                <div class="card-title-en">${mk.titleEn} (${m.servings} Servings)</div>
+                <div class="card-controls-row">
+                    <button class="action-voice-btn" onclick="speakAudioVoice('${encodeURIComponent(speechTelugu)}', '${encodeURIComponent(speechEnglish)}')">
+                        🔊 వినండి
+                    </button>
+                    ${ytBtn}
+                    <button class="btn-done-big" onclick="toggleCookingTaskDone('${mk.titleTe}')">
+                        ${isCompleted ? '✓ వండారు' : '✓ వండాము'}
+                    </button>
+                </div>
             </div>
-            ${ytSection}
         `;
-        mealBox.appendChild(card);
+        feed.appendChild(card);
     });
 
-    updateAttendanceBar();
-    updateLaundryView();
+    // 2. Household Cleaning Chores
+    const dayTasks = store.tasks.filter(t => t.date === activeDate && !t.isMealTask);
+    dayTasks.forEach(t => {
+        const card = document.createElement('div');
+        card.className = `homey-card ${t.status === 'completed' ? 'completed' : ''}`;
+
+        let actionArea = '';
+        if (t.isLaundry && t.laundryType === 'dry' && t.status === 'pending') {
+            actionArea = `
+                <button class="action-voice-btn" style="background:#fef3c7; color:#b45309;" onclick="laundryStep(${t.id}, 'not_dry')">💧 ఆరలేదు</button>
+                <button class="btn-done-big" onclick="laundryStep(${t.id}, 'dry_done')">☀️ ఆరాయి</button>
+            `;
+        } else if (t.isLaundry && t.laundryType === 'fold' && t.status === 'pending') {
+            actionArea = `
+                <button class="btn-done-big" onclick="laundryStep(${t.id}, 'fold_done')">👕 మడిచాము</button>
+            `;
+        } else if (t.status === 'pending') {
+            actionArea = `
+                <button class="btn-miss-big" onclick="openMissedDialog(${t.id})">✗ కాలేదు</button>
+                <button class="btn-done-big" onclick="markTaskDone(${t.id})">✓ అయ్యింది</button>
+            `;
+        } else if (t.status === 'completed') {
+            actionArea = `<span style="color:var(--homey-success); font-weight:800; font-size:16px;">✓ పని పూర్తయింది</span>`;
+        } else if (t.status === 'missed') {
+            actionArea = `<span style="color:var(--homey-danger); font-weight:800; font-size:16px;">✗ కాలేదు</span>`;
+        }
+
+        card.innerHTML = `
+            <div class="card-photo-box" onclick="speakAudioVoice('${encodeURIComponent(t.title_te)}', '${encodeURIComponent(t.title_en)}')">
+                <img src="${t.image || IMAGES.sweep}" class="card-photo" alt="Chore">
+                <div class="card-photo-gradient"></div>
+                <div class="card-top-tag">🧹 ఇంటి పని (Chore)</div>
+            </div>
+            <div class="card-body-content">
+                <div class="card-title-te">${t.title_te}</div>
+                <div class="card-title-en">${t.title_en}</div>
+                ${t.comment ? `<div style="color:var(--homey-danger); font-size:12px; font-weight:700; margin-top:4px;">కారణం: ${t.comment}</div>` : ''}
+                <div class="card-controls-row">
+                    <button class="action-voice-btn" onclick="speakAudioVoice('${encodeURIComponent(t.title_te)}', '${encodeURIComponent(t.title_en)}')">
+                        🔊 వినండి
+                    </button>
+                    ${actionArea}
+                </div>
+            </div>
+        `;
+        feed.appendChild(card);
+    });
+
+    renderAttendanceStatus();
 }
 
-// --- Voice Playback Everywhere (Telugu First, then English) ---
-function speakChoreVoice(teEnc, enEnc) {
-    if (!('speechSynthesis' in window)) {
-        alert("Audio playback not supported on this browser.");
-        return;
+function toggleCookingTaskDone(titleTe) {
+    const existing = store.tasks.find(t => t.date === activeDate && t.title_te === titleTe);
+    if (existing) {
+        existing.status = existing.status === 'completed' ? 'pending' : 'completed';
+    } else {
+        store.tasks.push({
+            id: Date.now(),
+            date: activeDate,
+            title_te: titleTe,
+            title_en: "Cooking done",
+            isMealTask: true,
+            status: 'completed'
+        });
     }
+    saveStore();
+    renderMaidStream();
+}
+
+// --- Voice Synthesis in Telugu & English ---
+function speakAudioVoice(teEnc, enEnc) {
+    if (!('speechSynthesis' in window)) return;
     const te = decodeURIComponent(teEnc);
     const en = decodeURIComponent(enEnc);
 
     window.speechSynthesis.cancel();
 
-    // 1. Speak Telugu
+    // Spoken Telugu
     const utterTe = new SpeechSynthesisUtterance(te);
     utterTe.lang = 'te-IN';
     utterTe.rate = 0.85;
 
-    // 2. Speak English after Telugu finishes
+    // Followed by English
     const utterEn = new SpeechSynthesisUtterance(en);
     utterEn.lang = 'en-IN';
     utterEn.rate = 0.9;
@@ -947,57 +861,60 @@ function speakChoreVoice(teEnc, enEnc) {
     window.speechSynthesis.speak(utterTe);
 }
 
-function speakAllTodayTasks() {
-    const tasks = state.tasks.filter(t => t.date === activeDate && t.status === 'pending');
-    if (tasks.length === 0) {
-        speakChoreVoice("ఈరోజు పెండింగ్ పనులు ఏవీ లేవు!", "No pending chores for today!");
-        return;
-    }
-    const combinedTe = "ఈరోజు చేయాల్సిన పనులు: " + tasks.map((t, idx) => `${idx + 1}. ${t.title_te}`).join(". ");
-    const combinedEn = "Today's chores: " + tasks.map((t, idx) => `${idx + 1}. ${t.title_en}`).join(". ");
-    speakChoreVoice(combinedTe, combinedEn);
+function speakAllTasksAloud() {
+    const dObj = new Date(activeDate + "T00:00:00");
+    const dayName = dayNames[dObj.getDay()];
+    const todayMeals = store.meals[dayName] || {};
+    const dayTasks = store.tasks.filter(t => t.date === activeDate && t.status === 'pending');
+
+    let speech = `ఈరోజు పనులు: `;
+    if (todayMeals.breakfast) speech += `ఉదయం టిఫిన్: ${todayMeals.breakfast.dish}. `;
+    if (todayMeals.lunch) speech += `మధ్యాహ్న భోజనం: ${todayMeals.lunch.dish}, ${todayMeals.lunch.servings} మందికి. `;
+    if (todayMeals.dinner) speech += `రాత్రి భోజనం: ${todayMeals.dinner.dish}. `;
+    dayTasks.forEach(t => { speech += `${t.title_te}. `; });
+
+    speakAudioVoice(encodeURIComponent(speech), encodeURIComponent("Here is your task list for today."));
 }
 
-// --- Laundry Workflow State Machine ---
+// --- Laundry Workflow ---
 function triggerWasherTonight() {
     const nextDate = new Date(activeDate + "T00:00:00");
     nextDate.setDate(nextDate.getDate() + 1);
     const nextStr = formatDateISO(nextDate);
 
-    state.laundry.stage = 'dry';
-    state.tasks.push({
+    store.tasks.push({
         id: Date.now(),
         date: nextStr,
         title_te: "వాషింగ్ మెషీన్ బట్టలు ఎండలో ఆరవేయాలి",
-        title_en: "Hang & dry washed clothes",
-        icon: "☀️",
+        title_en: "Hang washed clothes outside to dry",
+        image: IMAGES.drying,
         isLaundry: true,
         laundryType: 'dry',
         status: 'pending'
     });
-    saveState();
-    renderDailyContent();
-    alert(`బట్టలు వేశారు! రేపు (${nextStr}) బట్టలు ఆరవేసే పని షెడ్యూల్ అయ్యింది.`);
+    saveStore();
+    renderMaidStream();
+    alert(`మెషీన్‌లో బట్టలు వేశారు! రేపటికి (${nextStr}) బట్టలు ఆరవేసే పని చేర్చాము.`);
 }
 
-function laundryFlow(taskId, action) {
-    const t = state.tasks.find(x => x.id === taskId);
+function laundryStep(taskId, action) {
+    const t = store.tasks.find(x => x.id === taskId);
     if (!t) return;
 
     if (action === 'not_dry') {
-        const nextDate = new Date(t.date + "T00:00:00");
-        nextDate.setDate(nextDate.getDate() + 1);
-        const nextStr = formatDateISO(nextDate);
+        const nextDay = new Date(t.date + "T00:00:00");
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextStr = formatDateISO(nextDay);
 
         t.status = 'missed';
-        t.comment = 'బట్టలు ఇంకా ఆరలేదు (Carried over)';
+        t.comment = 'బట్టలు ఇంకా ఆరలేదు';
 
-        state.tasks.push({
+        store.tasks.push({
             id: Date.now(),
             date: nextStr,
             title_te: "ఆరని బట్టలు మళ్ళీ ఎండలో ఆరవేయాలి",
-            title_en: "Dry clothes (Carried over)",
-            icon: "☀️",
+            title_en: "Dry clothes again (Still wet)",
+            image: IMAGES.drying,
             isLaundry: true,
             laundryType: 'dry',
             status: 'pending'
@@ -1005,18 +922,17 @@ function laundryFlow(taskId, action) {
         alert(`ఆరలేదు కాబట్టి మరుసటి రోజుకి (${nextStr}) మార్చాము.`);
     } else if (action === 'dry_done') {
         t.status = 'completed';
-        state.laundry.stage = 'fold';
 
-        const nextDate = new Date(t.date + "T00:00:00");
-        nextDate.setDate(nextDate.getDate() + 1);
-        const nextStr = formatDateISO(nextDate);
+        const nextDay = new Date(t.date + "T00:00:00");
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextStr = formatDateISO(nextDay);
 
-        state.tasks.push({
+        store.tasks.push({
             id: Date.now(),
             date: nextStr,
             title_te: "ఆరిన బట్టలు మడతపెట్టి సర్దాలి",
-            title_en: "Fold and store clean clothes",
-            icon: "👕",
+            title_en: "Fold and store dry clothes",
+            image: IMAGES.folding,
             isLaundry: true,
             laundryType: 'fold',
             status: 'pending'
@@ -1024,256 +940,228 @@ function laundryFlow(taskId, action) {
         alert(`బట్టలు ఆరాయి! మడతపెట్టే పనిని రేపటికి (${nextStr}) చేర్చాము.`);
     } else if (action === 'fold_done') {
         t.status = 'completed';
-        state.laundry.stage = 'night';
-
-        state.tasks.push({
+        store.tasks.push({
             id: Date.now(),
             date: t.date,
             title_te: "రాత్రికి వాషింగ్ మెషీన్‌లో మళ్ళీ బట్టలు వేయాలి",
-            title_en: "Night: Put clothes in washing machine",
-            icon: "🧺",
+            title_en: "Night: Load dirty clothes in washing machine",
+            image: IMAGES.washer,
             status: 'pending'
         });
-        alert("బట్టలు మడిచారు! ఈ రాత్రికి మళ్ళీ వాషింగ్ మెషీన్‌లో బట్టలు వేయమని అలర్ట్ వచ్చింది.");
+        alert("బట్టలు మడిచారు! ఈ రాత్రికి మళ్ళీ వాషింగ్ మెషీన్ వేయమని అలర్ట్ వచ్చింది.");
     }
-    saveState();
-    renderDailyContent();
-}
-
-function updateLaundryView() {
-    ['wash', 'dry', 'fold', 'night'].forEach(s => document.getElementById(`laundry-ui-${s}`)?.classList.remove('active'));
-    const curr = state.laundry.stage || 'wash';
-    document.getElementById(`laundry-ui-${curr}`)?.classList.add('active');
-
-    const msg = document.getElementById('laundry-status-msg');
-    if (curr === 'dry') msg.innerText = "స్థితి: బట్టలు దండెంపై ఆరుతున్నాయి. ఆరాయో లేదో చూడండి!";
-    else if (curr === 'fold') msg.innerText = "స్థితి: బట్టలు ఆరాయి. మడతపెట్టడానికి సిద్ధంగా ఉన్నాయి.";
-    else if (curr === 'night') msg.innerText = "స్థితి: మడతలు పూర్తయ్యాయి. రాత్రికి మళ్ళీ మెషీన్ లో వేయాలి.";
-    else msg.innerText = "స్థితి: రాత్రి వాషింగ్ మెషీన్‌లో వేయడానికి సిద్ధంగా ఉంది.";
+    saveStore();
+    renderMaidStream();
 }
 
 // --- Attendance Handlers ---
-function recordPunch(type) {
+function punchAttendance(type) {
     const timeStr = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
-    if (!state.attendance[activeDate]) state.attendance[activeDate] = {};
+    if (!store.attendance[activeDate]) store.attendance[activeDate] = {};
 
     if (type === 'in') {
-        state.attendance[activeDate].in = timeStr;
-        state.attendance[activeDate].status = 'Present';
-        alert(`వచ్చారు (Punch In): ${timeStr} (IST) సమయానికి నమోదైంది!`);
+        store.attendance[activeDate].in = timeStr;
+        store.attendance[activeDate].status = 'Present';
+        alert(`వచ్చారు: ${timeStr} (IST) సమయానికి నమోదైంది!`);
     } else {
-        state.attendance[activeDate].out = timeStr;
-        alert(`వెళ్లారు (Punch Out): ${timeStr} (IST) సమయానికి నమోదైంది!`);
+        store.attendance[activeDate].out = timeStr;
+        alert(`వెళ్లారు: ${timeStr} (IST) సమయానికి నమోదైంది!`);
     }
-    saveState();
-    updateAttendanceBar();
+    saveStore();
+    renderAttendanceStatus();
 }
 
-function updateAttendanceBar() {
-    const rec = state.attendance[activeDate];
-    const badge = document.getElementById('att-badge-status');
-    if (!rec) {
-        badge.innerHTML = `<span style="color:#64748b;">హాజరు కాలేదు</span>`;
-    } else if (rec.status === 'Leave') {
-        badge.innerHTML = `<span style="color:#d97706; font-weight:800;">🏖️ సెలవు: ${rec.type}</span>`;
+function renderAttendanceStatus() {
+    const el = document.getElementById('att-badge');
+    const rec = store.attendance[activeDate];
+    if (!rec) el.innerHTML = `<span style="color:var(--text-sub);">🔴 రాలేదు (Not Punched)</span>`;
+    else if (rec.status === 'Leave') el.innerHTML = `<span style="color:var(--homey-warning); font-weight:800;">🏖️ సెలవు: ${rec.type}</span>`;
+    else el.innerHTML = `<span style="color:var(--homey-success); font-weight:800;">🟢 ఉన్నారు (In: ${rec.in || '-'} | Out: ${rec.out || 'ఉన్నారు'})</span>`;
+}
+
+// --- Security Gate (Maid vs Admin) ---
+function toggleAdminSecurity() {
+    if (isAdminUnlocked) {
+        lockAdminBackToMaid();
     } else {
-        badge.innerHTML = `<span style="color:#15803d; font-weight:800;">🟢 వచ్చారు (In: ${rec.in || '-'} | Out: ${rec.out || 'ఉన్నారు'})</span>`;
+        document.getElementById('admin-pin-input').value = '';
+        openModal('modal-admin-pin');
     }
 }
 
-// --- Missed Task Handlers ---
-function markTaskDone(id) {
-    const t = state.tasks.find(x => x.id === id);
-    if (t) {
-        t.status = 'completed';
-        saveState();
-        renderDailyContent();
+function verifyAdminPIN() {
+    const entered = document.getElementById('admin-pin-input').value.trim();
+    if (entered === ADMIN_PASS) {
+        isAdminUnlocked = true;
+        closeModal('modal-admin-pin');
+        document.getElementById('lock-icon').innerText = '🔓';
+        document.getElementById('lock-text').innerText = 'Admin Active';
+        document.getElementById('btn-admin-gate').classList.add('unlocked');
+        document.getElementById('view-maid-stream').style.display = 'none';
+        document.getElementById('view-admin-panel').style.display = 'block';
+        renderAdminWholeWeekTable();
+        renderAdminLogs();
+    } else {
+        alert("Incorrect PIN! (Wrong password)");
     }
 }
 
-function openMissedDialog(id) {
-    document.getElementById('missed-task-id-field').value = id;
-    const tomorrow = new Date(activeDate + "T00:00:00");
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('missed-reschedule-field').value = formatDateISO(tomorrow);
-    openModal('modal-missed-task');
+function lockAdminBackToMaid() {
+    isAdminUnlocked = false;
+    document.getElementById('lock-icon').innerText = '🔒';
+    document.getElementById('lock-text').innerText = 'Admin Lock';
+    document.getElementById('btn-admin-gate').classList.remove('unlocked');
+    document.getElementById('view-maid-stream').style.display = 'block';
+    document.getElementById('view-admin-panel').style.display = 'none';
+    renderMaidStream();
 }
 
-function saveMissedTaskLog() {
-    const id = parseFloat(document.getElementById('missed-task-id-field').value);
-    const reason = document.getElementById('missed-custom-text').value.trim() || document.getElementById('missed-reason-preset').value;
-    const resched = document.getElementById('missed-reschedule-field').value;
-
-    const t = state.tasks.find(x => x.id === id);
-    if (t) {
-        t.status = 'missed';
-        t.comment = reason;
-
-        if (resched) {
-            state.tasks.push({
-                id: Date.now(),
-                date: resched,
-                title_te: t.title_te + " (మళ్ళీ కేటాయించబడింది)",
-                title_en: t.title_en + " (Rescheduled)",
-                icon: t.icon,
-                status: 'pending'
-            });
-        }
-    }
-    saveState();
-    closeModal('modal-missed-task');
-    renderDailyContent();
-    alert("చేయని పనిగా రిపోర్ట్‌లో నమోదైంది.");
-}
-
-// --- Video Modal Player ---
-function showRecipeVideo(dish, url) {
+// --- YouTube Recipe Player ---
+function playRecipeYt(dish, url) {
     let vidId = '';
     if (url.includes('v=')) vidId = url.split('v=').split('&')[0];
     else if (url.includes('youtu.be/')) vidId = url.split('youtu.be/');
 
-    if (!vidId) { alert("యూట్యూబ్ లింక్ సరిగ్గా లేదు!"); return; }
+    if (!vidId) { alert("YouTube URL is not valid"); return; }
 
-    document.getElementById('yt-modal-title').innerText = dish + " రెసిపీ";
-    document.getElementById('yt-iframe-container').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vidId}?autoplay=1" allowfullscreen></iframe>`;
+    document.getElementById('yt-dish-title').innerText = dish + " రెసిపీ వీడియో";
+    document.getElementById('yt-iframe-slot').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vidId}?autoplay=1" allowfullscreen></iframe>`;
     openModal('modal-yt-player');
 }
-
-function closeYtModal() {
-    document.getElementById('yt-iframe-container').innerHTML = '';
+function closeYtPlayer() {
+    document.getElementById('yt-iframe-slot').innerHTML = '';
     closeModal('modal-yt-player');
 }
 
-// --- Admin Whole Week Table ---
-function renderAdminWeeklyTable() {
-    const tbody = document.getElementById('admin-weekly-meals-body');
+// --- Admin Subtabs & Table ---
+function switchAdminSubtab(sub) {
+    document.getElementById('admin-subtab-meals-box').style.display = sub === 'meals' ? 'block' : 'none';
+    document.getElementById('admin-subtab-audit-box').style.display = sub === 'audit' ? 'block' : 'none';
+}
+
+function renderAdminWholeWeekTable() {
+    const tbody = document.getElementById('admin-meals-tbody');
     tbody.innerHTML = '';
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    days.forEach((d, idx) => {
-        const m = state.meals[d] || {};
+    days.forEach(d => {
+        const m = store.meals[d] || {};
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${dayNamesTe[idx === 6 ? 0 : idx + 1]}<br><span style="font-size:11px; color:var(--slate-500);">${d}</span></strong></td>
-            <td>${m.breakfast?.dish || '-'}<br><small style="color:#d97706;">👥 ${m.breakfast?.servings || 2}</small></td>
-            <td>${m.lunch?.dish || '-'}<br><small style="color:#d97706;">👥 ${m.lunch?.servings || 2}</small></td>
-            <td>${m.dinner?.dish || '-'}<br><small style="color:#d97706;">👥 ${m.dinner?.servings || 2}</small></td>
+            <td><strong>${d}</strong></td>
+            <td>${m.breakfast?.dish || '-'}<br><small style="color:#f59e0b;">👥 ${m.breakfast?.servings || 2}</small></td>
+            <td>${m.lunch?.dish || '-'}<br><small style="color:#f59e0b;">👥 ${m.lunch?.servings || 2}</small></td>
+            <td>${m.dinner?.dish || '-'}<br><small style="color:#f59e0b;">👥 ${m.dinner?.servings || 2}</small></td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-function saveMealFromEditor() {
-    const day = document.getElementById('meal-edit-day').value;
-    const type = document.getElementById('meal-edit-type').value;
-    const dish = document.getElementById('meal-edit-dish').value.trim();
-    const servings = parseInt(document.getElementById('meal-edit-servings').value) || 2;
-    const yt = document.getElementById('meal-edit-yt').value.trim();
+function saveMealFromAdminEditor() {
+    const d = document.getElementById('edit-meal-day').value;
+    const type = document.getElementById('edit-meal-type').value;
+    const dish = document.getElementById('edit-meal-dish').value.trim();
+    const servings = parseInt(document.getElementById('edit-meal-servings').value) || 2;
+    const yt = document.getElementById('edit-meal-yt').value.trim();
 
-    if (!dish) { alert("వంటకం పేరు రాయండి!"); return; }
+    if (!dish) { alert("Please enter dish name"); return; }
 
-    if (!state.meals[day]) state.meals[day] = {};
-    state.meals[day][type] = { dish, servings, yt };
+    if (!store.meals[d]) store.meals[d] = {};
+    store.meals[d][type] = {
+        dish: dish,
+        servings: servings,
+        yt: yt,
+        img: type === 'breakfast' ? IMAGES.breakfast : (type === 'lunch' ? IMAGES.lunch : IMAGES.dinner)
+    };
 
-    saveState();
+    saveStore();
     closeModal('modal-meal-editor');
-    renderDailyContent();
-    renderAdminWeeklyTable();
-    alert("వంటల పట్టిక అప్‌డేట్ అయ్యింది!");
+    renderAdminWholeWeekTable();
+    alert(`Updated ${d} ${type} to ${dish}!`);
 }
 
-// --- Audit View ---
-function renderAuditLogs() {
-    const mContainer = document.getElementById('audit-missed-list');
-    mContainer.innerHTML = '';
-    const missed = state.tasks.filter(t => t.status === 'missed');
-    if (missed.length === 0) mContainer.innerHTML = '<small style="color:var(--slate-500);">మిస్ అయిన పనులేవీ లేవు!</small>';
+function renderAdminLogs() {
+    const mBox = document.getElementById('admin-missed-logs');
+    mBox.innerHTML = '';
+    const missed = store.tasks.filter(t => t.status === 'missed');
+    if (missed.length === 0) mBox.innerHTML = '<small style="color:var(--text-sub);">మిస్ అయిన పనులేవీ లేవు.</small>';
     else {
         missed.forEach(m => {
-            mContainer.innerHTML += `
-                <div style="padding:6px 0; border-bottom:1px solid #fee2e2; font-size:13px;">
-                    <strong>${m.date}: ${m.title_te}</strong><br>
-                    <span style="color:#b91c1c;">కారణం: ${m.comment}</span>
-                </div>
-            `;
+            mBox.innerHTML += `<div style="padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px;"><strong>${m.date}: ${m.title_te}</strong><br><span style="color:#fca5a5;">కారణం: ${m.comment}</span></div>`;
         });
     }
 
-    const aContainer = document.getElementById('audit-att-list');
-    aContainer.innerHTML = '';
-    const attKeys = Object.keys(state.attendance).sort().reverse();
-    if (attKeys.length === 0) aContainer.innerHTML = '<small style="color:var(--slate-500);">హాజరు వివరాలు లేవు.</small>';
-    else {
-        attKeys.forEach(k => {
-            const row = state.attendance[k];
-            aContainer.innerHTML += `
-                <div style="padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
-                    <strong>${k}</strong>: ${row.status} ${row.in ? `(In: ${row.in}, Out: ${row.out || 'Pending'})` : ''} ${row.notes ? `- ${row.notes}` : ''}
-                </div>
-            `;
-        });
-    }
-}
-
-// --- Navigation Tabs ---
-function switchNav(tab) {
-    ['daily', 'meals', 'audit'].forEach(t => {
-        document.getElementById(`tab-${t}-view`).style.display = t === tab ? 'block' : 'none';
-        document.getElementById(`nav-item-${t}`).classList.toggle('active', t === tab);
+    const aBox = document.getElementById('admin-att-logs');
+    aBox.innerHTML = '';
+    Object.keys(store.attendance).sort().reverse().forEach(k => {
+        const row = store.attendance[k];
+        aBox.innerHTML += `<div style="padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px;"><strong>${k}</strong>: ${row.status} (In: ${row.in || '-'} | Out: ${row.out || 'In progress'}) ${row.notes ? `- ${row.notes}` : ''}</div>`;
     });
-
-    if (tab === 'daily') renderDailyContent();
-    if (tab === 'meals') renderAdminWeeklyTable();
-    if (tab === 'audit') renderAuditLogs();
-}
-
-function setAppMode(mode) {
-    appMode = mode;
-    document.getElementById('btn-mode-helper').classList.toggle('active', mode === 'helper');
-    document.getElementById('btn-mode-admin').classList.toggle('active', mode === 'admin');
-    if (mode === 'admin') switchNav('meals');
-    else switchNav('daily');
 }
 
 // Modal generic
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function openMealModal() { openModal('modal-meal-editor'); }
-function openLeaveModal() { openModal('modal-leave-box'); }
+function openMealEditorModal() { openModal('modal-meal-editor'); }
+function openLeaveDialog() { openModal('modal-leave-dialog'); }
 
-function saveLeaveRecord() {
-    const type = document.getElementById('leave-type-choice').value;
-    const notes = document.getElementById('leave-notes-text').value;
-    state.attendance[activeDate] = { status: 'Leave', type, notes };
-    saveState();
-    closeModal('modal-leave-box');
-    updateAttendanceBar();
-    alert("సెలవుగా నమోదైంది. పనుల పెనాల్టీ ఉండదు.");
+function saveLeaveEntry() {
+    const type = document.getElementById('leave-category').value;
+    const notes = document.getElementById('leave-note-input').value;
+    store.attendance[activeDate] = { status: 'Leave', type, notes };
+    saveStore();
+    closeModal('modal-leave-dialog');
+    renderAttendanceStatus();
+    alert("సెలవుగా నమోదైంది.");
 }
 
-function openAddChoreModal() {
-    const te = prompt("పని పేరు తెలుగులో (Chore in Telugu):");
-    if (!te) return;
-    const en = prompt("English name (Optional):", te);
-    const icon = prompt("Emoji Icon (e.g. 🧹, 🪣, 🧺, 🪟):", "🧹");
-
-    state.tasks.push({
-        id: Date.now(),
-        date: activeDate,
-        title_te: te,
-        title_en: en,
-        icon: icon || "🧹",
-        status: 'pending'
-    });
-    saveState();
-    renderDailyContent();
+function openMissedDialog(id) {
+    document.getElementById('missed-task-id-holder').value = id;
+    const next = new Date(activeDate + "T00:00:00");
+    next.setDate(next.getDate() + 1);
+    document.getElementById('missed-resched-date').value = formatDateISO(next);
+    openModal('modal-missed-dialog');
 }
 
-// Initialize
+function confirmMissedTaskEntry() {
+    const id = parseFloat(document.getElementById('missed-task-id-holder').value);
+    const reason = document.getElementById('missed-custom-note').value.trim() || document.getElementById('missed-reason-select').value;
+    const resched = document.getElementById('missed-resched-date').value;
+
+    const t = store.tasks.find(x => x.id === id);
+    if (t) {
+        t.status = 'missed';
+        t.comment = reason;
+        if (resched) {
+            store.tasks.push({
+                id: Date.now(),
+                date: resched,
+                title_te: t.title_te + " (మళ్ళీ కేటాయించబడింది)",
+                title_en: t.title_en + " (Rescheduled)",
+                image: t.image,
+                status: 'pending'
+            });
+        }
+    }
+    saveStore();
+    closeModal('modal-missed-dialog');
+    renderMaidStream();
+}
+
+function markTaskDone(id) {
+    const t = store.tasks.find(x => x.id === id);
+    if (t) {
+        t.status = 'completed';
+        saveStore();
+        renderMaidStream();
+    }
+}
+
+// Boot
 window.onload = function() {
-    generateDefaultWeek();
+    generateWeeklyStandardTasks();
     renderCalendarStrip();
-    renderDailyContent();
+    renderMaidStream();
 };
 </script>
 </body>
